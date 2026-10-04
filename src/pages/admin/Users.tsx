@@ -1,11 +1,36 @@
+import { generateSecurePassword } from '../../lib/password.ts'
 import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import {
-  TextField, Card, CardContent, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Chip, Typography, Box, Dialog, DialogTitle,
-  DialogContent, DialogActions, Button as MuiButton, Avatar, Divider, Tabs, Tab,
-  Switch, FormControlLabel, Alert, Snackbar, InputAdornment, MenuItem, Tooltip, IconButton,
-} from '@mui/material'
+import TextField from '@mui/material/TextField'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Chip from '@mui/material/Chip'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import MuiButton from '@mui/material/Button'
+import Avatar from '@mui/material/Avatar'
+import Divider from '@mui/material/Divider'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Alert from '@mui/material/Alert'
+import Snackbar from '@mui/material/Snackbar'
+import InputAdornment from '@mui/material/InputAdornment'
+import MenuItem from '@mui/material/MenuItem'
+import Tooltip from '@mui/material/Tooltip'
+import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import LockResetIcon from '@mui/icons-material/LockReset'
@@ -534,7 +559,7 @@ export default function AdminUsers() {
               <InputAdornment position="end">
                 <Tooltip title="Сгенерировать">
                   <IconButton size="small" sx={{ color: '#d4a857' }}
-                    onClick={() => setNewPwd(Math.random().toString(36).slice(-4) + Math.random().toString(36).toUpperCase().slice(-4) + Math.floor(Math.random() * 90 + 10))}>
+                    onClick={() => setNewPwd(generateSecurePassword())}>
                     <ContentCopyIcon sx={{ fontSize: 18 }} />
                   </IconButton>
                 </Tooltip>

@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TextField, Button as MuiButton, Alert, Box, CircularProgress } from '@mui/material'
+import TextField from '@mui/material/TextField'
+import MuiButton from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useLang } from '../contexts/LanguageContext.tsx'
 import { useAuth } from '../contexts/AuthContext.tsx'
 import { supabase } from '../lib/supabase.ts'
 import PasswordField from '../components/common/PasswordField.tsx'
 import { translateAuthError } from '../lib/authErrors.ts'
-import { isStrongPassword } from '../lib/password.ts'
+import { passwordError } from '../lib/password.ts'
 
 const inputSx = {
   '& .MuiOutlinedInput-root': {
@@ -20,6 +24,7 @@ const inputSx = {
 }
 
 export default function ResetPassword() {
+  const submitting = useRef(false)
   const { t } = useLang()
   const { updatePassword } = useAuth()
   const navigate = useNavigate()
@@ -35,22 +40,30 @@ export default function ResetPassword() {
   // We verify it exists before allowing a password change.
   useEffect(() => {
     let mounted = true
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) { setValidSession(!!session); setChecking(false) }
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (mounted) {
+        setValidSession(!error && !!data?.session)
+        setChecking(false)
+      }
+    }).catch(() => {
+      if (mounted) { setValidSession(false); setChecking(false) }
     })
     return () => { mounted = false }
   }, [])
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); setError(''); setSuccess('')
-    if (!isStrongPassword(password)) { setError(t('auth.password.min')); return }
+    e.preventDefault()
+    if (submitting.current || !validSession) return
+    setError(''); setSuccess('')
+    const passwordProblem = passwordError(password)
+    if (passwordProblem) { setError(t(passwordProblem)); document.getElementById('reset-password')?.focus(); return }
     if (password !== confirm) { setError(t('auth.password.mismatch')); return }
-    setLoading(true)
+    submitting.current = true; setLoading(true)
     try {
       await updatePassword(password)
       setSuccess(t('auth.password.success'))
       setTimeout(() => navigate('/login'), 2000)
-    } catch (err) { setError(translateAuthError(err, t)) } finally { setLoading(false) }
+    } catch (err) { setError(translateAuthError(err, t)) } finally { submitting.current = false; setLoading(false) }
   }
 
   return (
@@ -69,13 +82,13 @@ export default function ResetPassword() {
           <div className="flex justify-center py-8"><CircularProgress size={28} sx={{ color: '#d4a857' }} /></div>
         ) : !validSession ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <Alert severity="warning" sx={{ mb: 2 }}>{t('auth.error.generic')}</Alert>
+            <Alert severity="warning" sx={{ mb: 2 }}>{t('auth.error.expiredLink')}</Alert>
             <Link to="/forgot-password" className="block text-center mt-3 text-sm font-semibold">{t('auth.reset')}</Link>
           </motion.div>
         ) : (
           <AnimatePresence mode="wait">
             {success ? (
-              <motion.div key="success" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+              <motion.div key="success" role="status" aria-live="polite" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                 className="text-center py-8 rounded-[20px]" style={{ background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.3)' }}
               >
                 <motion.div initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.15, type: 'spring', stiffness: 220 }}
@@ -86,10 +99,10 @@ export default function ResetPassword() {
               </motion.div>
             ) : (
               <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                <Box component="form" aria-busy={loading} onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                   <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
                     <PasswordField
-                      id="reset-password" name="password"
+                      helperText={t('auth.password.hint')} id="reset-password" name="password"
                       label={t('auth.password.new')} autoComplete="new-password" required
                       value={password} onChange={e => setPassword(e.target.value)}
                       showLabel={t('auth.password.show')} hideLabel={t('auth.password.hide')}
@@ -112,7 +125,7 @@ export default function ResetPassword() {
                   </AnimatePresence>
                   <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
                     <MuiButton
-                      type="submit" fullWidth variant="contained" disabled={loading}
+                      aria-label={t('auth.password.save')} type="submit" fullWidth variant="contained" disabled={loading}
                       sx={{
                         background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', py: 1.5,
                         transition: 'all 0.3s ease',

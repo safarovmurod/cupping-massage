@@ -1,7 +1,14 @@
-import { useState, useEffect } from 'react'
+import { isValidEmail } from '../lib/formValidation.ts'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TextField, Button as MuiButton, Box, Alert, CircularProgress, Divider, Typography } from '@mui/material'
+import TextField from '@mui/material/TextField'
+import MuiButton from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
 import { useLang } from '../contexts/LanguageContext.tsx'
 import { useAuth } from '../contexts/AuthContext.tsx'
 import PasswordField from '../components/common/PasswordField.tsx'
@@ -25,6 +32,7 @@ function homeFor(role) {
 }
 
 export default function Login() {
+  const submitting = useRef(false)
   const { t } = useLang()
   const { signIn, user, profile } = useAuth()
   const navigate = useNavigate()
@@ -40,15 +48,17 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitting.current) return
     setError('')
-    setLoading(true)
+    if (!isValidEmail(email)) { setError(t('auth.error.invalidEmail')); document.getElementById('login-email')?.focus(); return }
+    submitting.current = true; setLoading(true)
     try {
       const result = await signIn(email, password)
       navigate(homeFor(result?.role))
     } catch (err) {
       setError(translateAuthError(err, t))
     } finally {
-      setLoading(false)
+      submitting.current = false; setLoading(false)
     }
   }
 
@@ -85,7 +95,7 @@ export default function Login() {
           </Divider>
         </motion.div>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+        <Box component="form" aria-busy={loading} onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
           <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
             <TextField id="login-email" name="email" label={t('auth.email')} type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} sx={inputSx} />
           </motion.div>
@@ -106,7 +116,7 @@ export default function Login() {
           </AnimatePresence>
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
             <MuiButton
-              type="submit" fullWidth variant="contained" disabled={loading}
+              aria-label={t('auth.login.btn')} type="submit" fullWidth variant="contained" disabled={loading}
               sx={{
                 background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', py: 1.5,
                 transition: 'all 0.3s ease',

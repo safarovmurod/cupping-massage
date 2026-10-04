@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { CircularProgress } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useAuth } from './contexts/AuthContext.tsx'
 import { useLang } from './contexts/LanguageContext.tsx'
 import Header from './components/layout/Header.tsx'
@@ -11,13 +11,14 @@ import MobileBottomBar from './components/layout/MobileBottomBar.tsx'
 import CookieConsent from './components/common/CookieConsent.tsx'
 import ScrollToHash from './components/common/ScrollToHash.tsx'
 import PageViewTracker from './components/common/PageViewTracker.tsx'
+import PageMetadata from './components/common/PageMetadata.tsx'
 import Home from './pages/Home.tsx'
-import Contact from './pages/Contact.tsx'
-import NotFound from './pages/NotFound.tsx'
-import Login from './pages/Login.tsx'
-import Register from './pages/Register.tsx'
-import ForgotPassword from './pages/ForgotPassword.tsx'
-import ResetPassword from './pages/ResetPassword.tsx'
+const Contact = lazy(() => import('./pages/Contact.tsx'))
+const NotFound = lazy(() => import('./pages/NotFound.tsx'))
+const Login = lazy(() => import('./pages/Login.tsx'))
+const Register = lazy(() => import('./pages/Register.tsx'))
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.tsx'))
+const ResetPassword = lazy(() => import('./pages/ResetPassword.tsx'))
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout.tsx'))
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard.tsx'))
 const AdminUsers = lazy(() => import('./pages/admin/Users.tsx'))
@@ -68,19 +69,22 @@ function ProtectedRoute({ children }) {
   return children
 }
 
-function AdminLoading() {
+function PageLoading() {
+  const { t } = useLang()
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <CircularProgress size={36} sx={{ color: '#d4a857' }} />
+    <div role="status" aria-live="polite" className="flex items-center justify-center min-h-screen">
+      <CircularProgress aria-label={t('auth.loading')} size={36} sx={{ color: '#d4a857' }} />
     </div>
   )
 }
 
 function PublicLayout({ children }) {
+  const { t } = useLang()
   return (
     <>
+      <a href="#main-content" className="skip-link">{t('a11y.skip')}</a>
       <Header />
-      <main>{children}</main>
+      <main id="main-content" tabIndex={-1}>{children}</main>
       <Footer />
       <WhatsAppFloat />
       <MobileBottomBar />
@@ -94,8 +98,10 @@ export default function App() {
 
   return (
     <>
+    <PageMetadata />
     <ScrollToHash />
     <PageViewTracker />
+    <Suspense fallback={<PageLoading />}>
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PublicLayout><PageWrapper><Home /></PageWrapper></PublicLayout>} />
@@ -108,22 +114,23 @@ export default function App() {
         <Route path="/admin" element={
           <ProtectedRoute>
             <PageWrapper>
-              <Suspense fallback={<AdminLoading />}><AdminLayout /></Suspense>
+              <Suspense fallback={<PageLoading />}><AdminLayout /></Suspense>
             </PageWrapper>
           </ProtectedRoute>
         }>
-          <Route index element={<Suspense fallback={<AdminLoading />}><AdminDashboard /></Suspense>} />
-          <Route path="users" element={<Suspense fallback={<AdminLoading />}><AdminUsers /></Suspense>} />
-          <Route path="leads" element={<Suspense fallback={<AdminLoading />}><AdminLeads /></Suspense>} />
-          <Route path="content" element={<Suspense fallback={<AdminLoading />}><AdminContent /></Suspense>} />
-          <Route path="contacts" element={<Suspense fallback={<AdminLoading />}><AdminContacts /></Suspense>} />
-          <Route path="password-resets" element={<Suspense fallback={<AdminLoading />}><AdminPasswordResets /></Suspense>} />
-          <Route path="analytics" element={<Suspense fallback={<AdminLoading />}><AdminAnalytics /></Suspense>} />
-          <Route path="settings" element={<Suspense fallback={<AdminLoading />}><AdminSettings /></Suspense>} />
+          <Route index element={<Suspense fallback={<PageLoading />}><AdminDashboard /></Suspense>} />
+          <Route path="users" element={<Suspense fallback={<PageLoading />}><AdminUsers /></Suspense>} />
+          <Route path="leads" element={<Suspense fallback={<PageLoading />}><AdminLeads /></Suspense>} />
+          <Route path="content" element={<Suspense fallback={<PageLoading />}><AdminContent /></Suspense>} />
+          <Route path="contacts" element={<Suspense fallback={<PageLoading />}><AdminContacts /></Suspense>} />
+          <Route path="password-resets" element={<Suspense fallback={<PageLoading />}><AdminPasswordResets /></Suspense>} />
+          <Route path="analytics" element={<Suspense fallback={<PageLoading />}><AdminAnalytics /></Suspense>} />
+          <Route path="settings" element={<Suspense fallback={<PageLoading />}><AdminSettings /></Suspense>} />
         </Route>
         <Route path="*" element={<PublicLayout><PageWrapper><NotFound /></PageWrapper></PublicLayout>} />
       </Routes>
     </AnimatePresence>
+    </Suspense>
     </>
   )
 }

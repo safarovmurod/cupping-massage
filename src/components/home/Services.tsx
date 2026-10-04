@@ -97,6 +97,7 @@ export default function Services() {
                 src="/images/child-massage.jpg"
                 alt={t('services.kids.title')}
                 loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </motion.div>

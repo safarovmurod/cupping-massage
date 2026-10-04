@@ -1,13 +1,29 @@
 import { useState, useEffect, useCallback } from 'react'
-import {
-  Box, Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Chip, Button as MuiButton, IconButton, Tooltip,
-  Snackbar, Alert, CircularProgress, TextField, Divider,
-} from '@mui/material'
-import {
-  Refresh as RefreshIcon, ContentCopy as CopyIcon, Delete as DeleteIcon,
-  VpnKey as KeyIcon, WhatsApp as WhatsAppMui,
-} from '@mui/icons-material'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
+import Chip from '@mui/material/Chip'
+import MuiButton from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField from '@mui/material/TextField'
+import Divider from '@mui/material/Divider'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import CopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import KeyIcon from '@mui/icons-material/VpnKey'
+import WhatsAppMui from '@mui/icons-material/WhatsApp'
 import { supabase } from '../../lib/supabase.ts'
 import { useLang } from '../../contexts/LanguageContext.tsx'
 

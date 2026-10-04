@@ -24,6 +24,7 @@ export default function CookieConsent() {
     <AnimatePresence>
       {show && (
         <motion.div
+          role="region" aria-label={t('cookie.text')}
           initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="fixed bottom-0 left-0 right-0 z-[9999] flex items-center justify-center gap-4 flex-wrap px-6 py-4 border-t border-gold-soft"

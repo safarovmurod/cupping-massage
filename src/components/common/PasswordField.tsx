@@ -1,6 +1,9 @@
 import { useState } from 'react'
-import { TextField, InputAdornment, IconButton } from '@mui/material'
-import { Visibility, VisibilityOff } from '@mui/icons-material'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import IconButton from '@mui/material/IconButton'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
 
 const baseSx = {
   '& .MuiOutlinedInput-root': {
@@ -38,10 +41,13 @@ export default function PasswordField({
           <InputAdornment position="end">
             <IconButton
               aria-label={visible ? hideLabel : showLabel}
+              aria-pressed={visible}
+              aria-controls={props.id}
+              type="button"
+              disabled={props.disabled}
               onClick={() => setVisible(v => !v)}
               onMouseDown={e => e.preventDefault()}
               edge="end"
-              tabIndex={-1}
               sx={{
                 color: visible ? '#d4a857' : '#8a7f76',
                 transition: 'color 0.2s ease',

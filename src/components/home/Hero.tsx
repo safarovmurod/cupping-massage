@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useLang } from '../../contexts/LanguageContext.tsx'
 import { WhatsAppIcon } from '../icons/Icons.tsx'
 import { getWhatsAppLink } from '../layout/Header.tsx'
@@ -7,6 +8,38 @@ import { trackWhatsAppClick } from '../../lib/analytics.ts'
 
 export default function Hero() {
   const { lang, t } = useLang()
+  const reducedMotion = useReducedMotion()
+  const video = useRef<HTMLVideoElement>(null)
+  const [videoReady, setVideoReady] = useState(false)
+  const [videoPaused, setVideoPaused] = useState(false)
+
+  useEffect(() => {
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
+    if (reducedMotion || connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType)) {
+      setVideoReady(false)
+      return
+    }
+    // Let the main text and poster render before fetching decorative video.
+    const timer = window.setTimeout(() => setVideoReady(true), 1000)
+    return () => window.clearTimeout(timer)
+  }, [reducedMotion])
+
+  useEffect(() => { video.current?.load() }, [videoReady])
+
+  useEffect(() => {
+    const element = video.current
+    if (!element || !videoReady) return
+    let visible = true
+    const synchronize = () => {
+      if (!visible || document.hidden || videoPaused) element.pause()
+      else element.play().catch(() => { /* The poster remains if autoplay is unavailable. */ })
+    }
+    const observer = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; synchronize() })
+    observer.observe(element)
+    document.addEventListener('visibilitychange', synchronize)
+    synchronize()
+    return () => { observer.disconnect(); document.removeEventListener('visibilitychange', synchronize); element.pause() }
+  }, [videoReady, videoPaused])
 
   const handleWA = (e, type) => {
     e.preventDefault()
@@ -39,18 +72,19 @@ export default function Hero() {
       {/* Фоновое видео на всю секцию */}
       <div className="absolute inset-0 z-0">
         <video
+          ref={video}
           key={videoSrc}
           className="w-full h-full object-cover"
           poster="/images/hero-poster.jpg"
-          autoPlay
+          autoPlay={videoReady && !videoPaused}
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           aria-hidden="true"
           tabIndex={-1}
         >
-          <source src={videoSrc} type="video/mp4" />
+          {videoReady && <source src={videoSrc} type="video/mp4" />}
         </video>
         <div
           className="absolute inset-0"
@@ -60,6 +94,11 @@ export default function Hero() {
           }}
         />
       </div>
+
+      {videoReady && <button type="button" onClick={() => setVideoPaused(paused => !paused)}
+        aria-pressed={videoPaused} className="btn btn-secondary btn-sm absolute bottom-6 right-6 z-[3]">
+        {t(videoPaused ? 'hero.video.play' : 'hero.video.pause')}
+      </button>}
 
       <div className="container">
         <motion.div

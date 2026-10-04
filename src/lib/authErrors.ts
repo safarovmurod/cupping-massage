@@ -34,3 +34,8 @@ export function translateAuthError(error, t) {
   }
   return t('auth.error.generic')
 }
+
+export function translateResetCodeError(code, t) {
+  const known = ['invalid_email', 'too_many', 'no_code', 'expired', 'bad_code', 'weak_password']
+  return known.includes(code) ? t(`auth.forgot.err.${code}`) : t('auth.error.generic')
+}

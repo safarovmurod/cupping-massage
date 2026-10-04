@@ -1,5 +1,18 @@
 export const translations = {
   ru: {
+    "auth.password.hint": "Минимум 8 символов: заглавная и строчная латинские буквы и цифра.",
+    "auth.password.tooLong": "Пароль слишком длинный. Сократите его.",
+    "auth.error.invalidName": "Введите имя (минимум 2 символа).",
+
+    "a11y.skip": "Перейти к содержимому",
+    "a11y.theme": "Сменить тему",
+    "a11y.navigation": "Навигация",
+    "auth.error.expiredLink": "Ссылка для восстановления недействительна или истекла. Запросите новую ссылку.",
+    "contact.form.err.forWhom": "Выберите, кому нужна процедура.",
+    "contact.form.err.length": "Текст слишком длинный. Сократите его и повторите.",
+    "hero.video.pause": "Пауза видео",
+    "hero.video.play": "Включить видео",
+
     'nav.home': 'Главная', 'nav.benefits': 'Преимущества', 'nav.process': 'Как проходит массаж',
     'nav.prices': 'Цены', 'nav.contacts': 'Контакты', 'nav.login': 'Войти', 'nav.register': 'Регистрация', 'nav.admin': 'Админ-панель', 'nav.logout': 'Выйти',
     'header.whatsapp': 'Написать в WhatsApp',
@@ -159,6 +172,19 @@ export const translations = {
     'auth.access.denied.btn': 'На главную',
   },
   tj: {
+    "auth.password.hint": "Ҳадди ақал 8 аломат: ҳарфи калон ва хурди лотинӣ ва як рақам.",
+    "auth.password.tooLong": "Парол хеле дароз аст. Онро кӯтоҳ кунед.",
+    "auth.error.invalidName": "Номро ворид кунед (ҳадди ақал 2 аломат).",
+
+    "a11y.skip": "Ба муҳтавои асосӣ гузаред",
+    "a11y.theme": "Иваз кардани намуди сайт",
+    "a11y.navigation": "Роҳнамо",
+    "auth.error.expiredLink": "Пайванди барқароркунӣ нодуруст аст ё муҳлаташ гузаштааст. Пайванди нав дархост кунед.",
+    "contact.form.err.forWhom": "Интихоб кунед, ки массаж ба кӣ лозим аст.",
+    "contact.form.err.length": "Матн хеле дароз аст. Онро кӯтоҳ кунед.",
+    "hero.video.pause": "Таваққуфи видео",
+    "hero.video.play": "Пахши видео",
+
     'nav.home': 'Асосӣ', 'nav.benefits': 'Бартариҳо', 'nav.process': 'Массаж чӣ гуна мегузарад',
     'nav.prices': 'Нархҳо', 'nav.contacts': 'Тамос', 'nav.login': 'Даромадан', 'nav.register': 'Қайд', 'nav.admin': 'Панели админ', 'nav.logout': 'Баромадан',
     'header.whatsapp': 'Ба WhatsApp нависед',
@@ -309,6 +335,19 @@ export const translations = {
     'auth.access.denied.btn': 'Ба асосӣ',
   },
   en: {
+    "auth.password.hint": "At least 8 characters: uppercase and lowercase Latin letters and a digit.",
+    "auth.password.tooLong": "The password is too long. Please shorten it.",
+    "auth.error.invalidName": "Enter your name (at least 2 characters).",
+
+    "a11y.skip": "Skip to main content",
+    "a11y.theme": "Change theme",
+    "a11y.navigation": "Navigation",
+    "auth.error.expiredLink": "This recovery link is invalid or has expired. Request a new link.",
+    "contact.form.err.forWhom": "Choose who needs the procedure.",
+    "contact.form.err.length": "The text is too long. Shorten it and try again.",
+    "hero.video.pause": "Pause video",
+    "hero.video.play": "Play video",
+
     'nav.home': 'Home', 'nav.benefits': 'Benefits', 'nav.process': 'How It Works',
     'nav.prices': 'Prices', 'nav.contacts': 'Contacts', 'nav.login': 'Login', 'nav.register': 'Register', 'nav.admin': 'Admin panel', 'nav.logout': 'Sign out',
     'header.whatsapp': 'Message on WhatsApp',

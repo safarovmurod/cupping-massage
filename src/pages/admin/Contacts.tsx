@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { TextField, Card, CardContent, Typography, Button as MuiButton, Alert, Box } from '@mui/material'
+import TextField from '@mui/material/TextField'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import MuiButton from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
+import Box from '@mui/material/Box'
 import { supabase } from '../../lib/supabase.ts'
 
 const inputSx = {

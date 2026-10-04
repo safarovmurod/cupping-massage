@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Button, CircularProgress } from '@mui/material'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import { GoogleIcon } from '../icons/Icons.tsx'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 
@@ -21,6 +22,8 @@ export default function GoogleButton({ label, onError }) {
 
   return (
     <Button
+      aria-label={label}
+      aria-busy={loading}
       fullWidth
       onClick={handleClick}
       disabled={loading}

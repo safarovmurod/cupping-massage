@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { supabase } from '../lib/supabase.ts'
 import { logUserActivity, bumpLoginCounter } from '../lib/userActivity.ts'
 import { trackAuthEvent, excludeAdminFromAnalytics } from '../lib/analytics.ts'
+import { normalizeEmail } from '../lib/formValidation.ts'
+import { readPreference } from '../lib/storage.ts'
 
 const AuthContext = createContext<any>(null)
 
@@ -87,11 +89,11 @@ export function AuthProvider({ children }) {
   // extra — любые дополнительные поля профиля (phone, city, birth_date, ...)
   const signUp = useCallback(async (email, password, fullName, extra = {}) => {
     const { data, error } = await supabase.auth.signUp({
-      email, password,
+      email: normalizeEmail(email), password,
       options: {
         data: {
           full_name: fullName,
-          lang: localStorage.getItem('lang') || 'ru',
+          lang: readPreference('lang', 'ru', ['ru', 'tj', 'en']),
           ...extra,
         },
       },
@@ -102,7 +104,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signIn = useCallback(async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email: normalizeEmail(email), password })
     if (error) throw error
 
     // Блокировка аккаунта администратором
@@ -151,7 +153,7 @@ export function AuthProvider({ children }) {
   }, [user, fetchProfile])
 
   const resetPassword = useCallback(async (email) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), {
       redirectTo: `${window.location.origin}/reset-password`
     })
     if (error) throw error
@@ -173,4 +175,3 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext) as any
-

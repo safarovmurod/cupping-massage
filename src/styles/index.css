@@ -1,12 +1,34 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './fonts.css';
+@import 'tailwindcss';
+@config '../../tailwind.config.js';
+
+/* Preserve the existing v3 visual scale while using the maintained compiler. */
+@theme {
+  --color-white: #fff;
+  --color-black: #000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-orange-400: #fb923c;
+  --blur-md: 12px;
+  --blur-xl: 24px;
+}
+
+@layer base {
+  *, ::before, ::after { border-color: #e5e7eb; }
+  button, [role='button'] { cursor: pointer; }
+}
 
 @keyframes nav-enter { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes gradient-shift { 0%, 100% { background-position: 0% center; } 50% { background-position: 100% center; } }
 @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.3); opacity: 0; } }
 
 :focus-visible { outline: 2px solid #d4a857; outline-offset: 4px; }
+.skip-link {
+  position: fixed; top: 12px; left: 12px; z-index: 10000;
+  transform: translateY(-200%); padding: 12px 20px; border-radius: 12px;
+  background: var(--bg-secondary); color: var(--text-primary);
+}
+.skip-link:focus { transform: translateY(0); }
 @media (max-width: 1023px) {
   body { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
   .hero-section .container { padding-inline: 20px; }
@@ -98,7 +120,7 @@
 
   /* Section title */
   .section-title { @apply text-center mb-14; }
-  .section-title h2 { @apply inline-block gradient-text font-bold; }
+  .section-title h2 { @apply inline-block bg-clip-text text-transparent font-bold; background-image: linear-gradient(135deg, #d4a857, #e8915a); }
 
   /* Buttons */
   .btn {

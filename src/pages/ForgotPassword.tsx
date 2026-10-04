@@ -1,14 +1,21 @@
-import { useState } from 'react'
+import { isValidEmail } from '../lib/formValidation.ts'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TextField, Button as MuiButton, Box, Alert, CircularProgress, Tabs, Tab } from '@mui/material'
+import TextField from '@mui/material/TextField'
+import MuiButton from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
 import { useLang } from '../contexts/LanguageContext.tsx'
 import { useAuth } from '../contexts/AuthContext.tsx'
 import { supabase } from '../lib/supabase.ts'
 import { WhatsAppIcon } from '../components/icons/Icons.tsx'
 import PasswordField from '../components/common/PasswordField.tsx'
-import { translateAuthError } from '../lib/authErrors.ts'
-import { isStrongPassword } from '../lib/password.ts'
+import { translateAuthError, translateResetCodeError } from '../lib/authErrors.ts'
+import { passwordError } from '../lib/password.ts'
 
 const inputSx = {
   '& .MuiOutlinedInput-root': {
@@ -48,6 +55,7 @@ function SuccessPanel({ text }) {
 }
 
 export default function ForgotPassword() {
+  const submitting = useRef(false)
   const { t, s, lang } = useLang()
   const { resetPassword } = useAuth()
   const navigate = useNavigate()
@@ -80,52 +88,61 @@ export default function ForgotPassword() {
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault()
-    setEmailError(''); setEmailSuccess(''); setEmailLoading(true)
+    if (submitting.current) return
+    setEmailError(''); setEmailSuccess('')
+    if (!isValidEmail(email)) { setEmailError(t('auth.error.invalidEmail')); document.getElementById('forgot-email')?.focus(); return }
+    submitting.current = true; setEmailLoading(true)
     try {
       await resetPassword(email)
       setEmailSuccess(t('auth.reset.sent'))
     } catch (err) {
       setEmailError(translateAuthError(err, t))
-    } finally { setEmailLoading(false) }
+    } finally { submitting.current = false; setEmailLoading(false) }
   }
 
   // клиент оставляет заявку -> админ выдаёт код
   const handleRequestCode = async (e) => {
     e.preventDefault()
-    setCodeError(''); setCodeInfo(''); setCodeLoading(true)
+    if (submitting.current) return
+    setCodeError(''); setCodeInfo('')
+    if (!isValidEmail(codeEmail)) { setCodeError(t('auth.error.invalidEmail')); document.getElementById('forgot-code-request-email')?.focus(); return }
+    submitting.current = true; setCodeLoading(true)
     try {
       const { data, error } = await supabase.rpc('request_password_reset', {
-        p_email: codeEmail, p_lang: lang,
+        p_email: codeEmail.trim(), p_lang: lang,
       })
       if (error) throw error
       if (data?.ok) {
         setCodeInfo(t('auth.forgot.code.requested'))
         setCodeStage('enter')
       } else {
-        setCodeError(t(`auth.forgot.err.${data?.error || 'generic'}`))
+        setCodeError(translateResetCodeError(data?.error, t))
       }
     } catch (err) {
       setCodeError(translateAuthError(err, t))
-    } finally { setCodeLoading(false) }
+    } finally { submitting.current = false; setCodeLoading(false) }
   }
 
   // клиент вводит код + новый пароль
   const handleCodeSubmit = async (e) => {
     e.preventDefault()
+    if (submitting.current) return
     setCodeError(''); setCodeSuccess('')
-    if (!isStrongPassword(newPwd)) { setCodeError(t('auth.password.min')); return }
+    if (!isValidEmail(codeEmail)) { setCodeError(t('auth.error.invalidEmail')); document.getElementById('forgot-code-email')?.focus(); return }
+    const passwordProblem = passwordError(newPwd)
+    if (passwordProblem) { setCodeError(t(passwordProblem)); document.getElementById('forgot-new-password')?.focus(); return }
     if (newPwd !== confirmPwd) { setCodeError(t('auth.password.mismatch')); return }
-    setCodeLoading(true)
+    submitting.current = true; setCodeLoading(true)
     try {
       const { data, error } = await supabase.rpc('reset_password_with_code', {
-        p_email: codeEmail, p_code: code, p_new_password: newPwd,
+        p_email: codeEmail.trim(), p_code: code, p_new_password: newPwd,
       })
       if (error) throw error
       if (data?.ok) {
         setCodeSuccess(t('auth.forgot.code.success'))
         setTimeout(() => navigate('/login'), 2500)
       } else {
-        let msg = t(`auth.forgot.err.${data?.error || 'generic'}`)
+        let msg = translateResetCodeError(data?.error, t)
         if (data?.error === 'bad_code' && typeof data?.left === 'number') {
           msg += ' ' + t('auth.forgot.err.attempts_left').replace('{n}', String(Math.max(0, data.left)))
         }
@@ -133,7 +150,7 @@ export default function ForgotPassword() {
       }
     } catch (err) {
       setCodeError(translateAuthError(err, t))
-    } finally { setCodeLoading(false) }
+    } finally { submitting.current = false; setCodeLoading(false) }
   }
 
   return (
@@ -157,13 +174,13 @@ export default function ForgotPassword() {
             '& .Mui-selected': { color: '#d4a857 !important' },
           }}
         >
-          <Tab label={t('auth.forgot.tab.email')} />
-          <Tab label={t('auth.forgot.tab.code')} />
+          <Tab id="recovery-email-tab" aria-controls="recovery-email-panel" label={t('auth.forgot.tab.email')} />
+          <Tab id="recovery-code-tab" aria-controls="recovery-code-panel" label={t('auth.forgot.tab.code')} />
         </Tabs>
 
         {/* ============ ВКЛАДКА 1: ссылка на email ============ */}
         {tab === 0 && (
-          <motion.div key="tab-email" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}>
+          <motion.div key="tab-email" role="tabpanel" id="recovery-email-panel" aria-labelledby="recovery-email-tab" initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}>
             <AnimatePresence mode="wait">
               {emailSuccess ? (
                 <SuccessPanel key="ok" text={emailSuccess} />
@@ -171,7 +188,7 @@ export default function ForgotPassword() {
                 <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   <p className="text-xs text-muted-soft mb-3 leading-relaxed">{t('auth.forgot.email.hint')}</p>
                   <Alert severity="info" sx={{ mb: 2.5, fontSize: '0.78rem', py: 0.5 }}>{t('auth.forgot.email.limit')}</Alert>
-                  <Box component="form" onSubmit={handleEmailSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                  <Box component="form" aria-busy={emailLoading} onSubmit={handleEmailSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                     <TextField id="forgot-email" name="email" label={t('auth.email')} type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} sx={inputSx} />
                     <AnimatePresence mode="wait">
                       {emailError && (
@@ -180,7 +197,7 @@ export default function ForgotPassword() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                    <MuiButton type="submit" fullWidth variant="contained" disabled={emailLoading} sx={goldBtnSx}>
+                    <MuiButton aria-label={t('auth.reset.btn')} type="submit" fullWidth variant="contained" disabled={emailLoading} sx={goldBtnSx}>
                       {emailLoading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : t('auth.reset.btn')}
                     </MuiButton>
                   </Box>
@@ -197,7 +214,7 @@ export default function ForgotPassword() {
 
         {/* ============ ВКЛАДКА 2: код от администратора ============ */}
         {tab === 1 && (
-          <motion.div key="tab-code" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }}>
+          <motion.div key="tab-code" role="tabpanel" id="recovery-code-panel" aria-labelledby="recovery-code-tab" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }}>
             <AnimatePresence mode="wait">
               {codeSuccess ? (
                 <SuccessPanel key="ok" text={codeSuccess} />
@@ -207,7 +224,7 @@ export default function ForgotPassword() {
 
                   {/* шаг A: запросить код */}
                   {codeStage === 'request' && (
-                    <Box component="form" onSubmit={handleRequestCode} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                    <Box component="form" aria-busy={codeLoading} onSubmit={handleRequestCode} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                       <TextField id="forgot-code-request-email" name="email" label={t('auth.email')} type="email" autoComplete="email" required value={codeEmail} onChange={e => setCodeEmail(e.target.value)} sx={inputSx} />
                       <AnimatePresence mode="wait">
                         {codeError && (
@@ -216,7 +233,7 @@ export default function ForgotPassword() {
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      <MuiButton type="submit" fullWidth variant="contained" disabled={codeLoading} sx={goldBtnSx}>
+                      <MuiButton aria-label={t('auth.forgot.code.request')} type="submit" fullWidth variant="contained" disabled={codeLoading} sx={goldBtnSx}>
                         {codeLoading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : t('auth.forgot.code.request')}
                       </MuiButton>
                       <button
@@ -229,7 +246,7 @@ export default function ForgotPassword() {
 
                   {/* шаг B: ввести код и новый пароль */}
                   {codeStage === 'enter' && (
-                    <Box component="form" onSubmit={handleCodeSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                    <Box component="form" aria-busy={codeLoading} onSubmit={handleCodeSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                       <AnimatePresence>
                         {codeInfo && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
@@ -251,14 +268,14 @@ export default function ForgotPassword() {
 
                       <TextField id="forgot-code-email" name="email" label={t('auth.email')} type="email" autoComplete="email" required value={codeEmail} onChange={e => setCodeEmail(e.target.value)} sx={inputSx} />
                       <TextField
-                        id="forgot-code" name="code"
+                        id="forgot-code" name="code" autoComplete="one-time-code"
                         label={t('auth.forgot.code.label')} required value={code}
                         onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        inputProps={{ inputMode: 'numeric', maxLength: 6, style: { letterSpacing: '0.5em', textAlign: 'center', fontSize: '1.2rem', fontWeight: 700 } }}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]{6}', maxLength: 6, style: { letterSpacing: '0.5em', textAlign: 'center', fontSize: '1.2rem', fontWeight: 700 } }}
                         sx={inputSx}
                       />
                       <PasswordField
-                        id="forgot-new-password" name="new_password"
+                        error={!!codeError && !!passwordError(newPwd)} helperText={codeError && passwordError(newPwd) ? t(passwordError(newPwd)) : t('auth.password.hint')} id="forgot-new-password" name="new_password"
                         label={t('auth.password.new')} autoComplete="new-password" required
                         value={newPwd} onChange={e => setNewPwd(e.target.value)}
                         showLabel={t('auth.password.show')} hideLabel={t('auth.password.hide')}
@@ -278,7 +295,7 @@ export default function ForgotPassword() {
                         )}
                       </AnimatePresence>
 
-                      <MuiButton type="submit" fullWidth variant="contained" disabled={codeLoading} sx={goldBtnSx}>
+                      <MuiButton aria-label={t('auth.forgot.code.submit')} type="submit" fullWidth variant="contained" disabled={codeLoading} sx={goldBtnSx}>
                         {codeLoading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : t('auth.forgot.code.submit')}
                       </MuiButton>
                       <button

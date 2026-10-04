@@ -112,7 +112,7 @@ export default function Header() {
               ))}
             </div>
             <motion.button whileHover={{ rotate: 15 }} whileTap={{ scale: 0.9 }}
-              onClick={toggleTheme} aria-label="Toggle theme"
+              onClick={toggleTheme} aria-label={t('a11y.theme')}
               className="rounded-full bg-glass border border-glass-soft flex items-center justify-center text-primary-soft transition-all shrink-0"
               style={{ width: 38, height: 38 }}
             >
@@ -122,6 +122,8 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setAccountOpen(!accountOpen)}
+                  aria-expanded={accountOpen}
+                  aria-controls={accountOpen ? 'account-menu' : undefined}
                   className="flex items-center gap-2 text-sm font-semibold pl-1.5 pr-3.5 py-1.5 rounded-full border border-glass-soft text-primary-soft hover:bg-glass transition-all max-w-[210px]"
                 >
                   <Avatar photo={accountPhoto} letter={accountLetter} size={30} />
@@ -130,6 +132,7 @@ export default function Header() {
                 <AnimatePresence>
                   {accountOpen && (
                     <motion.div
+                      id="account-menu"
                       initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.18 }}
                       className="absolute right-0 top-[48px] min-w-[190px] p-1.5 rounded-2xl border border-glass-soft z-[1002]"

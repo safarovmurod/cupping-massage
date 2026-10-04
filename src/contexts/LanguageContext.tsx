@@ -1,11 +1,16 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { translations } from '../lib/i18n.ts'
 import { supabase } from '../lib/supabase.ts'
+import { readPreference, savePreference } from '../lib/storage.ts'
 
 const LanguageContext = createContext<any>(null)
 
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => localStorage.getItem('lang') || 'ru')
+  const [lang, setLang] = useState(() => readPreference('lang', 'ru', ['ru', 'tj', 'en']))
+
+  useEffect(() => {
+    document.documentElement.lang = lang === 'tj' ? 'tg' : lang
+  }, [lang])
 
   // Правки из админки: { 'hero.title.ru': '...', 'price_home_visit': '70' }
   const [overrides, setOverrides] = useState({})
@@ -47,8 +52,9 @@ export function LanguageProvider({ children }) {
   }, [loadContent])
 
   const changeLang = useCallback((newLang) => {
+    if (!['ru', 'tj', 'en'].includes(newLang)) return
     setLang(newLang)
-    localStorage.setItem('lang', newLang)
+    savePreference('lang', newLang)
     document.documentElement.lang = newLang === 'tj' ? 'tg' : newLang
   }, [])
 
@@ -74,4 +80,3 @@ export function LanguageProvider({ children }) {
 }
 
 export const useLang = () => useContext(LanguageContext) as any
-

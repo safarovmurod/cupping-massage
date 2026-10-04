@@ -1,7 +1,15 @@
-import { useState, useEffect } from 'react'
+import { isValidEmail } from '../lib/formValidation.ts'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { TextField, Button as MuiButton, Box, Alert, CircularProgress, MenuItem, Divider, Typography } from '@mui/material'
+import TextField from '@mui/material/TextField'
+import MuiButton from '@mui/material/Button'
+import Box from '@mui/material/Box'
+import Alert from '@mui/material/Alert'
+import CircularProgress from '@mui/material/CircularProgress'
+import MenuItem from '@mui/material/MenuItem'
+import Divider from '@mui/material/Divider'
+import Typography from '@mui/material/Typography'
 import { useLang } from '../contexts/LanguageContext.tsx'
 import { useAuth } from '../contexts/AuthContext.tsx'
 import PasswordField from '../components/common/PasswordField.tsx'
@@ -9,7 +17,7 @@ import GoogleButton from '../components/common/GoogleButton.tsx'
 import { trackAuthEvent } from '../lib/analytics.ts'
 import { isSupabaseConfigured } from '../lib/supabase.ts'
 import { translateAuthError } from '../lib/authErrors.ts'
-import { isStrongPassword } from '../lib/password.ts'
+import { passwordError } from '../lib/password.ts'
 
 const inputSx = {
   '& .MuiOutlinedInput-root': {
@@ -22,6 +30,7 @@ const inputSx = {
 }
 
 export default function Register() {
+  const submitting = useRef(false)
   const { t } = useLang()
   const { signUp, user, profile } = useAuth()
   const navigate = useNavigate()
@@ -51,11 +60,15 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitting.current) return
     setError(''); setSuccess('')
-    if (!isStrongPassword(password)) { setError(t('auth.password.min')); return }
-    setLoading(true)
+    if (!isValidEmail(email)) { setError(t('auth.error.invalidEmail')); document.getElementById('register-email')?.focus(); return }
+    if (fullName.trim().length < 2) { setError(t('auth.error.invalidName')); document.getElementById('register-fullname')?.focus(); return }
+    const passwordProblem = passwordError(password)
+    if (passwordProblem) { setError(t(passwordProblem)); document.getElementById('register-password')?.focus(); return }
+    submitting.current = true; setLoading(true)
     try {
-      const composedName = fullName || [firstName, lastName].filter(Boolean).join(' ')
+      const composedName = fullName.trim() || [firstName, lastName].filter(Boolean).join(' ')
       await signUp(email, password, composedName, {
         first_name: firstName || null,
         last_name: lastName || null,
@@ -75,7 +88,7 @@ export default function Register() {
     } catch (err) {
       setError(translateAuthError(err, t))
     } finally {
-      setLoading(false)
+      submitting.current = false; setLoading(false)
     }
   }
 
@@ -107,7 +120,7 @@ export default function Register() {
 
         <AnimatePresence mode="wait">
           {success ? (
-            <motion.div key="success" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+            <motion.div key="success" role="status" aria-live="polite" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
               className="text-center py-8 rounded-[20px]" style={{ background: 'rgba(37,211,102,0.1)', border: '1px solid rgba(37,211,102,0.3)' }}
             >
               <motion.div initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.15, type: 'spring', stiffness: 220 }}
@@ -125,16 +138,16 @@ export default function Register() {
                   <Typography sx={{ fontSize: '0.75rem', color: '#8a7f76', px: 1 }}>{t('auth.or')}</Typography>
                 </Divider>
               </motion.div>
-              <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+              <Box component="form" aria-busy={loading} onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
-                  <TextField id="register-fullname" name="name" label={t('auth.name')} autoComplete="name" required value={fullName} onChange={e => setFullName(e.target.value)} sx={inputSx} />
+                  <TextField inputProps={{ maxLength: 80 }} id="register-fullname" name="name" label={t('auth.name')} autoComplete="name" required value={fullName} onChange={e => setFullName(e.target.value)} sx={inputSx} />
                 </motion.div>
                 <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                   <TextField id="register-email" name="email" label={t('auth.email')} type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} sx={inputSx} />
                 </motion.div>
                 <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}>
                   <PasswordField
-                    id="register-password" name="password"
+                    error={!!error && !!passwordError(password)} helperText={error && passwordError(password) ? t(passwordError(password)) : t('auth.password.hint')} id="register-password" name="password"
                     label={t('auth.password')} autoComplete="new-password" required
                     value={password} onChange={e => setPassword(e.target.value)}
                     showLabel={t('auth.password.show')} hideLabel={t('auth.password.hide')}
@@ -149,13 +162,13 @@ export default function Register() {
                 </Divider>
 
                 <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-                  <TextField id="register-firstname" name="first_name" label={t('auth.firstName')} value={firstName}
+                  <TextField autoComplete="given-name" id="register-firstname" name="first_name" label={t('auth.firstName')} value={firstName}
                     onChange={e => setFirstName(e.target.value)} sx={inputSx} size="small" />
-                  <TextField id="register-lastname" name="last_name" label={t('auth.lastName')} value={lastName}
+                  <TextField autoComplete="family-name" id="register-lastname" name="last_name" label={t('auth.lastName')} value={lastName}
                     onChange={e => setLastName(e.target.value)} sx={inputSx} size="small" />
-                  <TextField id="register-phone" name="phone" label={t('auth.phone')} type="tel" placeholder="+992 __ ___ __ __"
+                  <TextField autoComplete="tel" id="register-phone" name="phone" label={t('auth.phone')} type="tel" placeholder="+992 __ ___ __ __"
                     value={phone} onChange={e => setPhone(e.target.value)} sx={inputSx} size="small" />
-                  <TextField id="register-birthdate" name="birth_date" label={t('auth.birthDate')} type="date" value={birthDate}
+                  <TextField autoComplete="bday" id="register-birthdate" name="birth_date" label={t('auth.birthDate')} type="date" value={birthDate}
                     onChange={e => setBirthDate(e.target.value)} sx={inputSx} size="small"
                     InputLabelProps={{ shrink: true }} />
                   <TextField id="register-gender" name="gender" label={t('auth.gender')} select value={gender}
@@ -167,12 +180,12 @@ export default function Register() {
                   </TextField>
                   <TextField id="register-nationality" name="nationality" label={t('auth.nationality')} value={nationality}
                     onChange={e => setNationality(e.target.value)} sx={inputSx} size="small" />
-                  <TextField id="register-region" name="region" label={t('auth.region')} value={region}
+                  <TextField autoComplete="address-level1" id="register-region" name="region" label={t('auth.region')} value={region}
                     onChange={e => setRegion(e.target.value)} sx={inputSx} size="small" />
-                  <TextField id="register-city" name="city" label={t('auth.city')} value={city}
+                  <TextField autoComplete="address-level2" id="register-city" name="city" label={t('auth.city')} value={city}
                     onChange={e => setCity(e.target.value)} sx={inputSx} size="small" />
                 </Box>
-                <TextField id="register-address" name="address" label={t('auth.address')} value={address}
+                <TextField autoComplete="street-address" id="register-address" name="address" label={t('auth.address')} value={address}
                   onChange={e => setAddress(e.target.value)} sx={inputSx} size="small"
                   multiline minRows={2} />
 
@@ -185,7 +198,7 @@ export default function Register() {
                 </AnimatePresence>
                 <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
                   <MuiButton
-                    type="submit" fullWidth variant="contained" disabled={loading}
+                    aria-label={t('auth.register.btn')} type="submit" fullWidth variant="contained" disabled={loading}
                     sx={{
                       background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', py: 1.5,
                       transition: 'all 0.3s ease',
