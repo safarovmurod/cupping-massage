@@ -12,6 +12,7 @@ import CookieConsent from './components/common/CookieConsent.tsx'
 import ScrollToHash from './components/common/ScrollToHash.tsx'
 import PageViewTracker from './components/common/PageViewTracker.tsx'
 import PageMetadata from './components/common/PageMetadata.tsx'
+import LoadErrorBoundary, { LoadErrorNotice } from './components/common/LoadErrorBoundary.tsx'
 import Home from './pages/Home.tsx'
 const Contact = lazy(() => import('./pages/Contact.tsx'))
 const NotFound = lazy(() => import('./pages/NotFound.tsx'))
@@ -101,6 +102,7 @@ export default function App() {
     <PageMetadata />
     <ScrollToHash />
     <PageViewTracker />
+    <LoadErrorBoundary resetKey={location.pathname} fallback={<LoadErrorNotice />}>
     <Suspense fallback={<PageLoading />}>
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -131,6 +133,7 @@ export default function App() {
       </Routes>
     </AnimatePresence>
     </Suspense>
+    </LoadErrorBoundary>
     </>
   )
 }

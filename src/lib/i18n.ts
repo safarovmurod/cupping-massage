@@ -1,5 +1,9 @@
 export const translations = {
   ru: {
+    'load.error.title': 'Не удалось загрузить эту часть сайта',
+    'load.error.desc': 'Проверьте интернет и попробуйте обновить страницу.',
+    'load.error.reload': 'Обновить страницу',
+    'load.error.close': 'Закрыть',
     "auth.password.hint": "Минимум 8 символов: заглавная и строчная латинские буквы и цифра.",
     "auth.password.tooLong": "Пароль слишком длинный. Сократите его.",
     "auth.error.invalidName": "Введите имя (минимум 2 символа).",
@@ -172,6 +176,10 @@ export const translations = {
     'auth.access.denied.btn': 'На главную',
   },
   tj: {
+    'load.error.title': 'Ин қисми сайт бор нашуд',
+    'load.error.desc': 'Интернетро санҷед ва саҳифаро аз нав бор кунед.',
+    'load.error.reload': 'Аз нав бор кардан',
+    'load.error.close': 'Пӯшидан',
     "auth.password.hint": "Ҳадди ақал 8 аломат: ҳарфи калон ва хурди лотинӣ ва як рақам.",
     "auth.password.tooLong": "Парол хеле дароз аст. Онро кӯтоҳ кунед.",
     "auth.error.invalidName": "Номро ворид кунед (ҳадди ақал 2 аломат).",
@@ -335,6 +343,10 @@ export const translations = {
     'auth.access.denied.btn': 'Ба асосӣ',
   },
   en: {
+    'load.error.title': 'This part of the site could not load',
+    'load.error.desc': 'Check your connection and reload the page to try again.',
+    'load.error.reload': 'Reload page',
+    'load.error.close': 'Close',
     "auth.password.hint": "At least 8 characters: uppercase and lowercase Latin letters and a digit.",
     "auth.password.tooLong": "The password is too long. Please shorten it.",
     "auth.error.invalidName": "Enter your name (at least 2 characters).",

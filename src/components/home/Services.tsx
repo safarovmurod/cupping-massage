@@ -117,6 +117,7 @@ export default function Services() {
             <motion.a
               href={getWhatsAppLink(lang, 'child')} target="_blank" rel="noopener noreferrer"
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+              style={{ maxWidth: '100%', whiteSpace: 'normal', textAlign: 'center' }}
               className="btn btn-primary" onClick={(e) => handleWA(e, 'child')}
             ><WhatsAppIcon size={18} /> {t('services.kids.btn')}</motion.a>
           </ScrollReveal>

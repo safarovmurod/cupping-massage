@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -11,6 +11,7 @@ import { useTheme } from '../../contexts/ThemeContext.tsx'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 import { getWhatsAppLink } from './Header.tsx'
 import { trackWhatsAppClick, trackLanguageChange } from '../../lib/analytics.ts'
+import LoadErrorBoundary, { LoadErrorNotice } from '../common/LoadErrorBoundary.tsx'
 
 const MobileMenu = lazy(() => import('./MobileMenu.tsx'))
 
@@ -22,6 +23,7 @@ const copy = {
 
 export default function MobileBottomBar() {
   const [open, setOpen] = useState(false)
+  const menuButton = useRef<HTMLButtonElement>(null)
   const { lang, changeLang, t } = useLang()
   const { theme, toggleTheme } = useTheme()
   const { user, profile, signOut } = useAuth()
@@ -88,12 +90,17 @@ export default function MobileBottomBar() {
         onClick={() => trackWhatsAppClick('mobile')} sx={dockButton}>
         <WhatsApp sx={{ fontSize: '23px' }} />WhatsApp
       </Button>
-      <Button onClick={() => setOpen(true)} aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? "mobile-menu" : undefined} sx={dockButton}>
+      <Button ref={menuButton} onClick={() => setOpen(true)} aria-haspopup="dialog" aria-expanded={open} aria-controls={open ? "mobile-menu" : undefined} sx={dockButton}>
         <MenuRounded sx={{ fontSize: '23px' }} />{text.menu}
       </Button>
     </Box>
-    <Suspense fallback={null}>
-      {open && <MobileMenu open={open} setOpen={setOpen} colors={colors} text={text} menuLinks={menuLinks} handleNavigate={handleNavigate} lang={lang} user={user} accountName={accountName} isAdmin={isAdmin} t={t} handleSignOut={handleSignOut} handleLanguage={handleLanguage} toggleTheme={toggleTheme} dark={dark} />}
-    </Suspense>
+    {open && <LoadErrorBoundary fallback={<LoadErrorNotice onClose={() => {
+      setOpen(false)
+      menuButton.current?.focus()
+    }} />}>
+      <Suspense fallback={null}>
+        <MobileMenu open={open} setOpen={setOpen} colors={colors} text={text} menuLinks={menuLinks} handleNavigate={handleNavigate} lang={lang} user={user} accountName={accountName} isAdmin={isAdmin} t={t} handleSignOut={handleSignOut} handleLanguage={handleLanguage} toggleTheme={toggleTheme} dark={dark} />
+      </Suspense>
+    </LoadErrorBoundary>}
   </>
 }
