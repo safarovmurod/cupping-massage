@@ -1,0 +1,37 @@
+name: Redesign browser smoke
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'tests/browser/redesign-smoke.py'
+      - '.github/workflows/browser-smoke.yml'
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: npm run build
+      - run: python -m pip install playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Start local preview
+        run: |
+          npm run preview -- --host 127.0.0.1 > /tmp/mama-preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173 >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/mama-preview.log
+          exit 1
+      - run: python tests/browser/redesign-smoke.py http://127.0.0.1:4173
