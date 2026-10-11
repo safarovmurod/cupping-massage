@@ -8,3 +8,11 @@ dist/
 .claude/
 supabase/.temp/
 artifacts/
+
+# Dedicated local Supabase sandbox; no runtime data or credentials in Git.
+testing/isolated/.env
+testing/isolated/.env.*
+testing/isolated/supabase/.temp/
+testing/isolated/supabase/.branches/
+testing/isolated/supabase/.profiles/
+testing/isolated/.data/

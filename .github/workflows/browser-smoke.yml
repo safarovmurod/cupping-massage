@@ -13,6 +13,11 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Synthetic and unroutable fixture. The browser intercepts all API calls.
+    env:
+      VITE_DEPLOY_STAGE: ci-mock
+      VITE_SUPABASE_URL: https://ci-supabase.invalid
+      VITE_SUPABASE_ANON_KEY: sb_publishable_ci_mock_1234567890
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
