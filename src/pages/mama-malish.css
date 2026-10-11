@@ -21,9 +21,6 @@ html[data-theme="dark"] .mm-site, html[data-theme="light"] .mm-site {
 .mm-header-nav { display: flex; gap: clamp(12px, 2vw, 26px); align-items: center; }
 .mm-header-nav a { color: #654e5c; font-size: 13px; font-weight: 600; white-space: nowrap; }
 .mm-header-actions { display: flex; align-items: center; gap: 12px; }
-.mm-language { display: flex; padding: 4px; gap: 2px; border-radius: 10px; background: #f7edf0; }
-.mm-language button { border: 0; background: transparent; color: #7e6a73; font-size: 11px; font-weight: 650; padding: 5px 7px; border-radius: 8px; cursor: pointer; }
-.mm-language button[aria-pressed="true"] { background: #fff; color: #9b506b; box-shadow: 0 2px 8px var(--brand-accent-dark)10; }
 .mm-header-cta { background: var(--brand-accent); color: white; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 12px 18px; white-space: nowrap; }
 .mm-admin-link { color: var(--brand-accent-dark); font-size: 12px; }
 .mm-hero { padding: clamp(46px, 6vw, 90px) 0; background: radial-gradient(ellipse at 80% 20%, #ffe6e7 0%, transparent 55%), linear-gradient(135deg, #fffaf8, #faedef); }
@@ -106,7 +103,6 @@ html[data-theme="dark"] .mm-site, html[data-theme="light"] .mm-site {
  .mm-logo { font-size: 15px; }
  .mm-logo-mark { width: 39px; height: 39px; border-radius: 13px; }
  .mm-logo small { font-size: 9px; white-space: normal; max-width: 138px; }
- .mm-language button { padding: 5px 5px; font-size: 10px; }
  .mm-header-cta { display: none; }
  .mm-hero { padding: 28px 0 55px; }
  .mm-hero-layout, .mm-about-layout, .mm-faq-layout, .mm-contact-panel { grid-template-columns: 1fr; }
@@ -163,4 +159,14 @@ html[data-theme="dark"] .mm-site, html[data-theme="light"] .mm-site {
   .mm-logo small { display: none; }
   .mm-logo { font-size: 13px; gap: 5px; }
   .mm-header-actions { gap: 2px; }
+}
+
+.mm-language-select { min-width: 138px; flex: 0 0 auto; }
+.mm-language-value { display: inline-flex; white-space: nowrap; align-items: center; font-size: 12px; font-weight: 750; color: var(--brand-ink); }
+.mm-language-code { letter-spacing: .03em; }
+@media (max-width: 700px) {
+ .mm-language-select { min-width: 79px; width: 79px; }
+ .mm-language-name { display: none; }
+ .mm-language-value { font-size: 12px; }
+ .mm-language-select .MuiSelect-select { padding-left: 10px; padding-right: 26px !important; }
 }

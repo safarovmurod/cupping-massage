@@ -6,6 +6,7 @@ import MenuRounded from '@mui/icons-material/MenuRounded'
 import CloseRounded from '@mui/icons-material/CloseRounded'
 import ArrowOutwardRounded from '@mui/icons-material/ArrowOutwardRounded'
 import BrandMark from '../brand/BrandMark.tsx'
+import LanguageSelect from '../brand/LanguageSelect.tsx'
 import { useLang } from '../../contexts/LanguageContext.tsx'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 import { BRAND_NAME, INSTAGRAM_DM_URL, getBrandCopy } from '../../lib/brand.ts'
@@ -15,7 +16,7 @@ import '../../pages/mama-malish.css'
 export const getWhatsAppLink = (_lang = 'ru', _type = 'general') => INSTAGRAM_DM_URL
 
 export default function Header() {
-  const { lang, changeLang, t } = useLang()
+  const { lang, t } = useLang()
   const { user, profile } = useAuth()
   const copy = getBrandCopy(lang)
   const location = useLocation()
@@ -42,9 +43,7 @@ export default function Header() {
             {links.map(item => <Link key={item.href} to={item.href}>{item.text}</Link>)}
           </nav>
           <div className="mm-header-actions">
-            <div className="mm-language" aria-label="Language">
-              {['ru','tj','en'].map(l => <button key={l} type="button" aria-pressed={l===lang} onClick={() => changeLang(l)}>{l.toUpperCase()}</button>)}
-            </div>
+            <LanguageSelect />
             <div className="mm-auth-links">
               {!user && <><Link to="/login">{t('nav.login')}</Link><Link to="/register">{t('nav.register')}</Link></>}
               {admin && <Link to="/admin">{t('nav.admin')}</Link>}
