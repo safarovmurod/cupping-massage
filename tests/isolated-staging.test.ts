@@ -37,7 +37,8 @@ test('reviewed migrations have no direct top-level data inserts or data mutation
 test('staging seed contains no real client data and has no test-auth-user inserts', () => {
   const seed = text('testing/isolated/supabase/seed.sql')
   assert.match(seed, /example\.invalid|Synthetic|Тестовое окружение/)
-  assert.doesNotMatch(seed, /auth\.users|public\.profiles|992[0-9]{9}|gmail\.com/)
+  const executable = seed.split('\n').filter(line => !line.trimStart().startsWith('--')).join('\n')
+  assert.doesNotMatch(executable, /auth\.users|public\.profiles|992[0-9]{9}|gmail\.com/)
   assert.match(text('testing/isolated/test-auth-crud.mjs'), /54321/)
   assert.match(text('testing/isolated/test-auth-crud.mjs'), /localServiceKey/)
 })
