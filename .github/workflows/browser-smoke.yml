@@ -5,6 +5,7 @@ on:
       - 'src/**'
       - 'public/**'
       - 'tests/browser/redesign-smoke.py'
+      - 'tests/browser/accessibility-audit.py'
       - '.github/workflows/browser-smoke.yml'
 permissions:
   contents: read

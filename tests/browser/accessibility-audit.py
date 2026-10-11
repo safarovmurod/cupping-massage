@@ -199,6 +199,53 @@ with sync_playwright() as playwright:
     print("PASS mocked admin leads status UI (NO production write)", flush=True)
     checks += 1
     context.close()
+
+    # Local simulated backend errors and recoveries. Supabase remains intercepted.
+    context, page = new_context(browser, width=390)
+    failures = {"count": 0}
+    def flaky_booking(route):
+        if route.request.method == "POST":
+            failures["count"] += 1
+            if failures["count"] == 1:
+                return route.fulfill(status=503, json={"message":"Synthetic outage", "code":"PGRST503"})
+            return route.fulfill(status=201, body="")
+        return mock_api(route)
+    page.route("https://*.supabase.co/rest/v1/leads*", flaky_booking)
+    page.goto(BASE + "/contact", wait_until="domcontentloaded")
+    page.locator("#contact-name").fill("Synthetic Form Test")
+    page.locator("#contact-phone").fill("+992900123456")
+    page.locator("#contact-for-whom").click()
+    page.get_by_role("option", name="Женщине").click()
+    page.get_by_role("button", name="Отправить заявку").click()
+    expect(page.get_by_role("alert")).to_contain_text("Не удалось отправить заявку", timeout=15000)
+    expect(page.locator("#contact-name")).to_have_value("Synthetic Form Test")
+    expect(page.locator("#contact-phone")).to_have_value("+992900123456")
+    page.get_by_role("button", name="Отправить заявку").click()
+    expect(page.get_by_role("status")).to_contain_text("Заявка отправлена", timeout=15000)
+    assert failures["count"] == 2, failures
+    print("PASS mocked contact request: 503, input retention, retry, success (NO production write)", flush=True)
+    checks += 1
+    context.close()
+
+    # Empty/error admin states are checked with synthetic sessions and data.
+    for mode in ("empty", "error"):
+        context, page = new_context(browser, width=390, role="admin")
+        def mock_leads_read(route):
+            if route.request.method == "GET":
+                if mode == "error":
+                    return route.fulfill(status=503, json={"message":"Synthetic outage", "code":"PGRST503"})
+                return route.fulfill(status=200, json=[])
+            return mock_api(route)
+        page.route("https://*.supabase.co/rest/v1/leads*", mock_leads_read)
+        page.goto(BASE + "/admin/leads", wait_until="domcontentloaded")
+        if mode == "empty":
+            expect(page.get_by_text("Заявок пока нет")).to_be_visible(timeout=15000)
+        else:
+            expect(page.get_by_role("alert")).to_contain_text("Не удалось загрузить заявки", timeout=15000)
+        print("PASS mocked admin leads", mode, "state (NO production queries)", flush=True)
+        checks += 1
+        context.close()
+
     browser.close()
 
 print(json.dumps({"axe_scans":checks,"violations":len(violations),
