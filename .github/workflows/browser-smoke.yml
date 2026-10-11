@@ -35,3 +35,13 @@ jobs:
           cat /tmp/mama-preview.log
           exit 1
       - run: python tests/browser/redesign-smoke.py http://127.0.0.1:4173
+      - run: npm install --no-save --package-lock=false axe-core@4.10.3
+      - run: python tests/browser/accessibility-audit.py http://127.0.0.1:4173
+      - name: Save screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mama-i-malish-a11y-screenshots
+          path: /tmp/mama-a11y-screenshots/
+          if-no-files-found: ignore
+          retention-days: 7
