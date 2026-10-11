@@ -96,11 +96,11 @@ def new_context(browser, width=390, lang="ru", role=None):
     initial = """try {localStorage.setItem('cookieConsent','declined');
         localStorage.setItem('lang', %s); %s} catch(e) {}""" % (
         json.dumps(lang),
-        "localStorage.setItem('sb-alafwzjqxwjanoqrirwi-auth-token', %s);" % json.dumps(storage)
+        "localStorage.setItem('sb-ci-supabase-auth-token', %s);" % json.dumps(storage)
         if role else "")
     context.add_init_script(initial)
     page = context.new_page()
-    page.route("https://*.supabase.co/**", mock_api)
+    page.route("https://ci-supabase.invalid/**", mock_api)
     page.on("pageerror", lambda error: runtime_errors.append(str(error)))
     return context, page
 

@@ -18,4 +18,8 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+        env:
+          VITE_DEPLOY_STAGE: ci-mock
+          VITE_SUPABASE_URL: https://ci-supabase.invalid
+          VITE_SUPABASE_ANON_KEY: sb_publishable_ci_mock_1234567890
       - run: npm audit --audit-level=moderate

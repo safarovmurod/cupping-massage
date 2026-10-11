@@ -1,26 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
+import { resolveSupabaseConfig } from './supabaseConfig.ts'
 
-// Publishable key only. Access is enforced by database RLS, never by hiding this key.
-const defaultUrl = 'https://alafwzjqxwjanoqrirwi.supabase.co'
-const defaultKey = 'sb_publishable_pttATYOLyVLJ3FTOLiCWZw_MhL2nCQ6'
-const configuredUrl = import.meta.env.VITE_SUPABASE_URL?.trim()
-const configuredKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim()
-const supabaseUrl = configuredUrl || defaultUrl
-const supabaseKey = configuredKey || defaultKey
-
-function isPublicKey(key: string) {
-  if (key.startsWith('sb_publishable_')) return true
-  try {
-    const payload = JSON.parse(atob(key.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
-    return payload.role === 'anon'
-  } catch { return false }
-}
-
-if (!/^https:\/\/[^/]+\/?$/.test(supabaseUrl) || !isPublicKey(supabaseKey)) {
-  throw new Error('Invalid Supabase public configuration. Never use a secret or service_role key in VITE_* variables.')
-}
+// Fail closed in every environment, including Vite's production-mode Preview.
+// Never read a baked-in production URL/key as a fallback.
+const config = resolveSupabaseConfig({
+  stage: import.meta.env.VITE_DEPLOY_STAGE,
+  url: import.meta.env.VITE_SUPABASE_URL,
+  anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  productionOrigin: import.meta.env.VITE_PRODUCTION_ORIGIN,
+  browserOrigin: typeof window === 'undefined' ? undefined : window.location.origin,
+})
 
 export const isSupabaseConfigured = () => true
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+export const supabase = createClient(config.url, config.anonKey, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
 })

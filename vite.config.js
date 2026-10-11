@@ -1,6 +1,29 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-export default defineConfig({
+import { resolveSupabaseConfig } from './src/lib/supabaseConfig.ts'
+
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_')
+  // Prevent a cloud Preview build with inherited Production secrets.
+  if ((process.env.VERCEL_ENV === 'preview' || process.env.CONTEXT === 'deploy-preview')
+      && env.VITE_DEPLOY_STAGE !== 'preview') {
+    throw new Error('Preview builds require VITE_DEPLOY_STAGE=preview and a dedicated staging Supabase project.')
+  }
+  if (env.VITE_DEPLOY_STAGE === 'production'
+      && ((process.env.VERCEL_ENV && process.env.VERCEL_ENV !== 'production')
+          || (process.env.CONTEXT && process.env.CONTEXT !== 'production'))) {
+    throw new Error('A non-production hosting context cannot build with the production Supabase stage.')
+  }
+  if (env.VITE_DEPLOY_STAGE === 'ci-mock' && process.env.GITHUB_ACTIONS !== 'true') {
+    throw new Error('ci-mock may only be built by the controlled GitHub Actions job.')
+  }
+  resolveSupabaseConfig({
+    stage: env.VITE_DEPLOY_STAGE,
+    url: env.VITE_SUPABASE_URL,
+    anonKey: env.VITE_SUPABASE_ANON_KEY,
+    productionOrigin: env.VITE_PRODUCTION_ORIGIN,
+  })
+  return {
   plugins: [react()],
   base: '/',
   // Prebundle lazy-route UI dependencies to avoid a dev-server reload on first use.
@@ -82,4 +105,5 @@ export default defineConfig({
     ],
   },
   build: { outDir: 'dist', sourcemap: false },
+  }
 })

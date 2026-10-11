@@ -17,7 +17,7 @@ checks = 0
 
 def attach_mocks(page):
     # No contact with the production database or Auth services.
-    page.route("https://*.supabase.co/**", lambda route: route.fulfill(
+    page.route("https://ci-supabase.invalid/**", lambda route: route.fulfill(
         status=200, content_type="application/json", body="[]"))
 
 
