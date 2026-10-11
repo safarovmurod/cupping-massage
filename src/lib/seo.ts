@@ -1,29 +1,9 @@
 export const SITE_URL = 'https://massagev1-one.vercel.app'
-
 const copy = {
-  ru: {
-    brand: 'Баночный массаж', home: 'Баночный массаж в Душанбе — для женщин и детей',
-    description: 'Баночный массаж для женщин и детей в Душанбе. Приём в кабинете и выезд на дом. Адрес, часы работы и запись в WhatsApp.',
-    contact: 'Контакты и запись — Баночный массаж в Душанбе',
-    contactDescription: 'Адрес в Душанбе, часы работы и контакты. Напишите в WhatsApp или оставьте заявку на массаж для женщин и детей.',
-    login: 'Вход', register: 'Регистрация', recovery: 'Восстановление пароля', reset: 'Новый пароль', admin: 'Админ-панель', missing: 'Страница не найдена',
-  },
-  tj: {
-    brand: 'Массажи бонкагӣ', home: 'Массажи бонкагӣ дар Душанбе — барои занон ва кӯдакон',
-    description: 'Массажи бонкагӣ барои занон ва кӯдакон дар Душанбе. Қабул дар кабинет ва хизмат дар хона. Суроға, соатҳои кор ва сабти ном тавассути WhatsApp.',
-    contact: 'Тамос ва сабти ном — Массажи бонкагӣ дар Душанбе',
-    contactDescription: 'Суроға, соатҳои кор ва роҳҳои тамос дар Душанбе. Ба WhatsApp нависед ё барои массажи занон ва кӯдакон дархост гузоред.',
-    login: 'Вуруд', register: 'Бақайдгирӣ', recovery: 'Барқарор кардани парол', reset: 'Пароли нав', admin: 'Панели идоракунӣ', missing: 'Саҳифа ёфт нашуд',
-  },
-  en: {
-    brand: 'Cupping massage', home: 'Cupping massage in Dushanbe — for women and children',
-    description: 'Cupping massage for women and children in Dushanbe. Appointments at our location and home visits. Address, opening hours and WhatsApp booking.',
-    contact: 'Contact and booking — Cupping massage in Dushanbe',
-    contactDescription: 'Find our Dushanbe address, opening hours and contact details. Message us on WhatsApp or request a massage for women and children.',
-    login: 'Sign in', register: 'Register', recovery: 'Password recovery', reset: 'New password', admin: 'Administration', missing: 'Page not found',
-  },
+  ru: { brand: 'Мама и малыш', home: 'Мама и малыш — детский и женский массаж', description: 'Детский массаж с 3 месяцев, женский и баночный массаж, электрофорез и светотерапия. Цены в сомони, запись через Instagram Direct.', contact: 'Запись на массаж — Мама и малыш', contactDescription: 'Запишитесь на детский или женский массаж через Instagram Direct. Уточните свободное время и условия процедур.', login: 'Вход', register: 'Регистрация', recovery: 'Восстановление пароля', reset: 'Новый пароль', admin: 'Админ-панель', missing: 'Страница не найдена' },
+  tj: { brand: 'Мама и малыш', home: 'Мама и малыш — массаж барои кӯдакон ва занон', description: 'Массажи кӯдакон аз 3-моҳагӣ, массаж барои занон, массажи банкагӣ, электрофорез ва светотерапия. Нархҳо бо сомонӣ, навбат дар Instagram Direct.', contact: 'Навбатгирӣ — Мама и малыш', contactDescription: 'Барои массажи кӯдак ё зан дар Instagram Direct навбат гиред. Вақт ва шартҳоро аниқ кунед.', login: 'Вуруд', register: 'Бақайдгирӣ', recovery: 'Барқарор кардани парол', reset: 'Пароли нав', admin: 'Панели идоракунӣ', missing: 'Саҳифа ёфт нашуд' },
+  en: { brand: 'Mama & Baby', home: 'Mama & Baby — massage for mothers and babies', description: 'Baby massage from 3 months, women’s massage, cupping and physiotherapy options. Prices in somoni, booking via Instagram Direct.', contact: 'Massage bookings — Mama & Baby', contactDescription: 'Book massage for mothers and babies through Instagram Direct. Ask about availability.', login: 'Sign in', register: 'Register', recovery: 'Password recovery', reset: 'New password', admin: 'Administration', missing: 'Page not found' },
 }
-
 export function getPageMetadata(pathname: string, language = 'ru') {
   const text = copy[language] || copy.ru
   const path = pathname.replace(/\/+$/, '') || '/'
@@ -38,15 +18,12 @@ export function getPageMetadata(pathname: string, language = 'ru') {
     canonical: publicPage ? `${SITE_URL}${path}` : null,
     robots: publicPage ? 'index, follow' : 'noindex, nofollow',
     locale: language === 'tj' ? 'tg_TJ' : language === 'en' ? 'en_US' : 'ru_RU',
-    image: `${SITE_URL}/images/hero-poster.jpg`,
+    image: `${SITE_URL}/images/infant-massage.jpg`,
   }
 }
-
 export function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]))
 }
-
-// Shared by build-time HTML generation and browser navigation.
 export function renderMetadata(pathname: string) {
   const meta = getPageMetadata(pathname)
   const tags = [
