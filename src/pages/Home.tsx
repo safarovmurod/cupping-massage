@@ -1,4 +1,9 @@
 import { useState } from 'react'
+import ArrowOutwardRounded from '@mui/icons-material/ArrowOutwardRounded'
+import ArrowDownwardRounded from '@mui/icons-material/ArrowDownwardRounded'
+import CheckRounded from '@mui/icons-material/CheckRounded'
+import FavoriteBorderRounded from '@mui/icons-material/FavoriteBorderRounded'
+import ServiceIcon from '../components/brand/ServiceIcon.tsx'
 import { useLang } from '../contexts/LanguageContext.tsx'
 import { BRAND_NAME, INSTAGRAM_DM_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL, getBrandCopy } from '../lib/brand.ts'
 import './mama-malish.css'
@@ -20,16 +25,16 @@ export default function Home() {
             <h1 id="mm-heading">{copy.heroTitle}</h1>
             <p className="mm-hero-subtitle">{copy.heroLead}</p>
             <div className="mm-actions">
-              <DM className="mm-btn mm-btn-primary">{copy.heroPrimary} <span aria-hidden="true">↗</span></DM>
-              <a className="mm-btn mm-btn-ghost" href="#services">{copy.heroSecondary} <span aria-hidden="true">↓</span></a>
+              <DM className="mm-btn mm-btn-primary">{copy.heroPrimary} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM>
+              <a className="mm-btn mm-btn-ghost" href="#services">{copy.heroSecondary} <ArrowDownwardRounded aria-hidden="true" fontSize="small" /></a>
             </div>
             <div className="mm-highlights" aria-label={copy.tagline}>
-              {[copy.featureOne, copy.featureTwo, copy.featureThree].map((v) => <span key={v}>✓ {v}</span>)}
+              {[copy.featureOne, copy.featureTwo, copy.featureThree].map((v) => <span key={v}><CheckRounded aria-hidden="true" sx={{ fontSize: 16 }} /> {v}</span>)}
             </div>
           </div>
           <div className="mm-hero-image">
             <img src="/images/infant-massage.jpg" alt={lang === 'tj' ? 'Массажи эҳтиёткоронаи кӯдакона' : lang === 'en' ? 'Gentle massage for babies' : 'Бережный массаж для малышей'} fetchPriority="high" />
-            <div className="mm-image-label"><span aria-hidden="true">♡</span> {copy.tagline}</div>
+            <div className="mm-image-label"><FavoriteBorderRounded aria-hidden="true" sx={{ fontSize: 23, verticalAlign: "middle" }} /> {copy.tagline}</div>
           </div>
         </div>
       </section>
@@ -40,12 +45,12 @@ export default function Home() {
           <div className="mm-service-grid">
             {copy.prices.map((item, i) => (
               <article key={item.title} className={'mm-service-card' + (i === 0 ? ' mm-service-featured' : '')}>
-                <div className="mm-service-icon" aria-hidden="true">{item.icon}</div>
+                <div className="mm-service-icon" aria-hidden="true"><ServiceIcon name={item.icon} /></div>
                 <h3>{item.title}</h3>
                 <div className="mm-price">{item.price}</div>
                 <div className="mm-duration">{item.duration}</div>
                 <p>{item.note}</p>
-                <DM className="mm-card-link">{copy.instagramButton} <span aria-hidden="true">↗</span></DM>
+                <DM className="mm-card-link">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM>
               </article>
             ))}
           </div>
@@ -55,13 +60,13 @@ export default function Home() {
       <section className="mm-section mm-about" id="about" aria-labelledby="mm-about-title">
         <div className="mm-shell mm-about-layout">
           <div className="mm-about-photo"><img src="/images/child-massage.jpg" loading="lazy" decoding="async" alt={copy.tagline} /></div>
-          <div className="mm-about-content"><span className="mm-kicker">{copy.aboutEyebrow}</span><h2 id="mm-about-title">{copy.aboutTitle}</h2><p>{copy.aboutText}</p><p className="mm-small-copy">{copy.aboutNote}</p><DM className="mm-btn mm-btn-primary">{copy.instagramButton} ↗</DM></div>
+          <div className="mm-about-content"><span className="mm-kicker">{copy.aboutEyebrow}</span><h2 id="mm-about-title">{copy.aboutTitle}</h2><p>{copy.aboutText}</p><p className="mm-small-copy">{copy.aboutNote}</p><DM className="mm-btn mm-btn-primary">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM></div>
         </div>
       </section>
 
       <section className="mm-section mm-safety" aria-labelledby="mm-safety-title">
         <div className="mm-shell mm-safety-panel">
-          <div className="mm-safety-symbol" aria-hidden="true">♡</div>
+          <div className="mm-safety-symbol" aria-hidden="true"><FavoriteBorderRounded sx={{ fontSize: 43 }} /></div>
           <div><h2 id="mm-safety-title">{copy.safetyTitle}</h2><p>{copy.safetyText}</p><p className="mm-small-copy">{copy.safetyDisclaimer}</p></div>
         </div>
       </section>
@@ -89,7 +94,7 @@ export default function Home() {
             <p className="mm-small-copy">{copy.contactsNote}</p>
           </div>
           <div className="mm-contact-actions">
-            <DM className="mm-btn mm-btn-primary">{copy.instagramButton} <span aria-hidden="true">↗</span></DM>
+            <DM className="mm-btn mm-btn-primary">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM>
             <a className="mm-btn mm-btn-outline" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">{copy.profileButton}</a>
             <p>{copy.hoursLabel}</p>
           </div>

@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useLang } from '../contexts/LanguageContext.tsx'
-import { WhatsAppIcon } from '../components/icons/Icons.tsx'
-import { getWhatsAppLink } from '../components/layout/Header.tsx'
-import { trackWhatsAppClick } from '../lib/analytics.ts'
+import InstagramIcon from '@mui/icons-material/Instagram'
+import { INSTAGRAM_DM_URL } from '../lib/brand.ts'
 
 export default function NotFound() {
-  const { lang, t } = useLang()
+  const { t } = useLang()
   return (
     <section className="min-h-[90vh] flex items-center justify-center text-center">
       <div className="container">
@@ -25,9 +24,8 @@ export default function NotFound() {
               <Link to="/" className="btn btn-primary btn-lg">{t('404.btn.home')}</Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <a href={getWhatsAppLink(lang)} className="btn btn-secondary btn-lg"
-                onClick={(e) => { e.preventDefault(); trackWhatsAppClick('404'); window.open(getWhatsAppLink(lang), '_blank', 'noopener,noreferrer') }}>
-                <WhatsAppIcon size={20} /> {t('404.btn.whatsapp')}
+              <a href={INSTAGRAM_DM_URL} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-lg">
+                <InstagramIcon sx={{ fontSize: 20 }} /> {t('404.btn.whatsapp')}
               </a>
             </motion.div>
           </div>

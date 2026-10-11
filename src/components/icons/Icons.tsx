@@ -228,26 +228,5 @@ export const UserPlusIcon = (p) => (
   </svg>
 )
 
-// Логотип — массажная банка (вакуумная чашка) с клапаном и бликом стекла.
-export const LogoIcon = (p) => (
-  <svg width={p.size || 40} height={p.size || 40} viewBox="0 0 64 64" fill="none" {...p}>
-    <defs>
-      <linearGradient id="logo-gold" x1="14" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#e8c178" />
-        <stop offset="55%" stopColor="#d4a857" />
-        <stop offset="100%" stopColor="#e8915a" />
-      </linearGradient>
-    </defs>
-    {/* клапан сверху */}
-    <rect x="27" y="7" width="10" height="9" rx="4" fill="url(#logo-gold)" />
-    {/* корпус банки */}
-    <path
-      d="M20 18h24a3 3 0 0 1 3 3v14c0 8.28-6.72 15-15 15s-15-6.72-15-15V21a3 3 0 0 1 3-3z"
-      fill="url(#logo-gold)"
-    />
-    {/* блик стекла */}
-    <path d="M25 24v11c0 3.9 2.4 7.2 5.8 8.6" stroke="#fff8ec" strokeOpacity="0.55" strokeWidth="3" strokeLinecap="round" />
-    {/* волны вакуума под банкой */}
-    <path d="M18 55h9M31 55h15" stroke="url(#logo-gold)" strokeWidth="3" strokeLinecap="round" strokeOpacity="0.65" />
-  </svg>
-)
+// Reuse the single branded vector mark in legacy components.
+export { default as LogoIcon } from '../brand/BrandMark.tsx'

@@ -1,13 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
-  <defs>
-    <linearGradient id="logo-gold" x1="14" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#e8c178"/>
-      <stop offset="55%" stop-color="#d4a857"/>
-      <stop offset="100%" stop-color="#e8915a"/>
-    </linearGradient>
-  </defs>
-  <rect x="27" y="7" width="10" height="9" rx="4" fill="url(#logo-gold)"/>
-  <path d="M20 18h24a3 3 0 0 1 3 3v14c0 8.28-6.72 15-15 15s-15-6.72-15-15V21a3 3 0 0 1 3-3z" fill="url(#logo-gold)"/>
-  <path d="M25 24v11c0 3.9 2.4 7.2 5.8 8.6" stroke="#fff8ec" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round"/>
-  <path d="M18 55h9M31 55h15" stroke="url(#logo-gold)" stroke-width="3" stroke-linecap="round" stroke-opacity="0.65"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Мама и малыш">
+<circle cx="32" cy="32" r="30" fill="#F9EDF0"/>
+<path d="M32 52C19 43 13 35 13 26c0-8 5-13 12-13 4 0 7 2 9 6 2-4 5-6 9-6 7 0 12 5 12 13 0 9-10 20-23 26Z" fill="none" stroke="#A65F7A" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="28" cy="29" r="5.1" fill="#A65F7A"/><circle cx="39" cy="35" r="3.7" fill="#D7A0B0"/>
+<path d="M18.5 43c3.2-7.5 13.2-11.5 20.3-6.2" stroke="#A65F7A" stroke-width="3.5" stroke-linecap="round"/>
 </svg>
