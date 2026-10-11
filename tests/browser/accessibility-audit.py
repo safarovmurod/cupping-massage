@@ -59,6 +59,7 @@ ZERO_STATS = dict(
 violations = []
 runtime_errors = []
 checks = 0
+axe_scans = 0
 mock_writes = []
 
 def mock_api(route):
@@ -104,7 +105,7 @@ def new_context(browser, width=390, lang="ru", role=None):
     return context, page
 
 def axe_scan(page, label):
-    global checks
+    global checks, axe_scans
     # Audit the settled interface. Framer Motion entrance fades briefly blend
     # button text and backgrounds, yielding false contrast failures mid-transition.
     page.wait_for_timeout(950)
@@ -124,6 +125,7 @@ def axe_scan(page, label):
     else:
         print("PASS axe WCAG-tagged", label, flush=True)
     checks += 1
+    axe_scans += 1
 
 assert AXE.is_file(), f"Missing {AXE}: npm install --no-save --package-lock=false axe-core@4.10.3"
 with sync_playwright() as playwright:
@@ -136,8 +138,7 @@ with sync_playwright() as playwright:
             page.evaluate("document.fonts.ready")
             label = f"public-{path.replace('/', '-') or 'home'}-{width}"
             axe_scan(page, label)
-            if path in ("/", "/contact", "/login", "/register"):
-                page.screenshot(path=str(SHOTS / (label + ".png")), full_page=True, animations="disabled")
+            page.screenshot(path=str(SHOTS / (label + ".png")), full_page=True, animations="disabled")
             if page.evaluate("document.documentElement.scrollWidth > innerWidth"):
                 violations.append({"page":label, "violations":[{"id":"horizontal-overflow", "impact":"serious"}]})
         if width == 390:
@@ -172,8 +173,7 @@ with sync_playwright() as playwright:
             page.wait_for_timeout(400)
             label = f"admin-{path.replace('/', '-')}-{width}"
             axe_scan(page, label)
-            if path in ("/admin", "/admin/leads", "/admin/content"):
-                page.screenshot(path=str(SHOTS / (label + ".png")), full_page=True, animations="disabled")
+            page.screenshot(path=str(SHOTS / (label + ".png")), full_page=True, animations="disabled")
             if page.evaluate("document.documentElement.scrollWidth > innerWidth"):
                 violations.append({"page":label, "violations":[{"id":"horizontal-overflow", "impact":"serious"}]})
         context.close()
@@ -248,7 +248,8 @@ with sync_playwright() as playwright:
 
     browser.close()
 
-print(json.dumps({"axe_scans":checks,"violations":len(violations),
+print(json.dumps({"axe_scans":axe_scans,"other_ui_checks":checks-axe_scans,
+    "total_checks":checks,"violations":len(violations),
     "uncaught_browser_errors":len(runtime_errors),"mock_api_writes":len(mock_writes)},
     ensure_ascii=False),flush=True)
 if runtime_errors:
