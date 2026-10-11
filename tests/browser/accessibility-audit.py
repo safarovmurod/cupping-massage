@@ -105,6 +105,9 @@ def new_context(browser, width=390, lang="ru", role=None):
 
 def axe_scan(page, label):
     global checks
+    # Audit the settled interface. Framer Motion entrance fades briefly blend
+    # button text and backgrounds, yielding false contrast failures mid-transition.
+    page.wait_for_timeout(950)
     page.add_script_tag(path=str(AXE))
     results = page.evaluate("""async tags => {
       const result = await window.axe.run(document, {runOnly: {type:'tag', values: tags}});

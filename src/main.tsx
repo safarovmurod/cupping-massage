@@ -56,6 +56,7 @@ const muiDarkTheme = createTheme({
     MuiAlert: {
       styleOverrides: {
         standardWarning: { color: '#f5d6b6' },
+        standardInfo: { color: '#b9ddf4' },
       },
     },
     MuiButton: {

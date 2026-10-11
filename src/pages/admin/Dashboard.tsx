@@ -64,13 +64,14 @@ export default function AdminDashboard() {
     <AnalyticsOverview summary={stats} />
     {stats && <Card><CardContent>
       <Typography component="h2" sx={{ fontSize: '20px', fontWeight: 700, mb: '20px' }}>Просмотры за 7 дней · Душанбе</Typography>
+      {stats.days.length === 0 ? <Typography role="status" sx={{ color: '#c8b8c4', py: 5, textAlign: 'center' }}>Пока нет просмотров за последние 7 дней.</Typography> :
       <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: '12px', height: '200px' }}>
         {stats.days.map(day => <Box key={day.day} sx={{ flex: 1, minWidth: '0px', textAlign: 'center' }}>
           <Typography sx={{ fontSize: '12px', mb: '6px' }}>{day.visits}</Typography>
           <Box sx={{ height: `${day.visits / maxVisits * 140}px`, minHeight: day.visits ? '2px' : '0px', borderRadius: '8px 8px 0 0', background: '#e2aec0' }} />
           <Typography sx={{ fontSize: '12px', mt: '8px', color: '#c4b8ab' }}>{new Date(day.day).toLocaleDateString('ru-RU', { weekday: 'short', timeZone: 'Asia/Dushanbe' })}</Typography>
         </Box>)}
-      </Box>
+      </Box>}
     </CardContent></Card>}
   </Stack>
 }
