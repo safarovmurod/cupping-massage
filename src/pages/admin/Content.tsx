@@ -28,11 +28,11 @@ import { useLang } from '../../contexts/LanguageContext.tsx'
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(212,168,87,0.4)' },
-    '&.Mui-focused fieldset': { borderColor: '#d4a857' },
+    '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
+    '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
   '& .MuiInputLabel-root': { color: '#8a7f76' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#d4a857' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
 const LANGS = [
@@ -674,8 +674,8 @@ export default function AdminContent() {
             onChange={(_, v) => setActiveLang(v)}
             sx={{
               '& .MuiTab-root': { color: '#8a7f76', fontWeight: 600, textTransform: 'none', fontSize: '0.95rem' },
-              '& .Mui-selected': { color: '#d4a857 !important' },
-              '& .MuiTabs-indicator': { background: '#d4a857', height: 3, borderRadius: 2 },
+              '& .Mui-selected': { color: '#e2aec0 !important' },
+              '& .MuiTabs-indicator': { background: '#e2aec0', height: 3, borderRadius: 2 },
             }}
           >
             {LANGS.map((l) => {
@@ -690,7 +690,7 @@ export default function AdminContent() {
                       {l.label}
                       {cnt > 0 && (
                         <Chip label={cnt} size="small"
-                          sx={{ height: 18, fontSize: '0.7rem', background: '#e8915a', color: '#fff' }} />
+                          sx={{ height: 18, fontSize: '0.7rem', background: '#cf839e', color: '#fff' }} />
                       )}
                     </Box>
                   }
@@ -723,20 +723,20 @@ export default function AdminContent() {
               defaultExpanded={section.id === 'brand-main' || !!search}
               sx={{
                 background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(212,168,87,0.15)',
+                border: '1px solid rgba(226,174,192,0.15)',
                 borderRadius: '14px !important',
                 '&:before': { display: 'none' },
               }}
             >
-              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#d4a857' }} />}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: '#e2aec0' }} />}>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.4, flex: 1 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                     <Typography sx={{ fontWeight: 700, color: '#f5ede4' }}>{section.title}</Typography>
                     <Chip label={`${section.fields.length} полей`} size="small"
-                      sx={{ height: 20, fontSize: '0.7rem', background: 'rgba(212,168,87,0.15)', color: '#d4a857' }} />
+                      sx={{ height: 20, fontSize: '0.7rem', background: 'rgba(226,174,192,0.15)', color: '#e2aec0' }} />
                     {sectionChanged > 0 && (
                       <Chip label={`изменено: ${sectionChanged}`} size="small"
-                        sx={{ height: 20, fontSize: '0.7rem', background: '#e8915a', color: '#fff' }} />
+                        sx={{ height: 20, fontSize: '0.7rem', background: '#cf839e', color: '#fff' }} />
                     )}
                   </Box>
                   {/* ГДЕ на сайте */}
@@ -744,7 +744,7 @@ export default function AdminContent() {
                     <PlaceOutlined aria-hidden="true" sx={{ fontSize: 15 }} /> {section.where}
                     <a href={section.anchor} target="_blank" rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      style={{ color: '#d4a857', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                      style={{ color: '#e2aec0', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
                       смотреть <OpenInNewIcon sx={{ fontSize: 13 }} />
                     </a>
                   </Typography>
@@ -764,8 +764,8 @@ export default function AdminContent() {
                           gridTemplateColumns: { xs: '1fr', md: '230px 1fr' },
                           gap: 1.5, alignItems: 'start',
                           p: 1.2, borderRadius: '10px',
-                          background: isChanged ? 'rgba(232,145,90,0.07)' : 'transparent',
-                          border: isChanged ? '1px solid rgba(232,145,90,0.3)' : '1px solid transparent',
+                          background: isChanged ? 'rgba(207,131,158,0.07)' : 'transparent',
+                          border: isChanged ? '1px solid rgba(207,131,158,0.3)' : '1px solid transparent',
                         }}
                       >
                         <Box>
@@ -812,13 +812,13 @@ export default function AdminContent() {
           position: 'sticky', bottom: 0, mt: 3, py: 2, px: 2.5,
           display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap',
           background: 'rgba(34,28,42,0.96)', backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(212,168,87,0.25)', borderRadius: '16px',
+          border: '1px solid rgba(226,174,192,0.25)', borderRadius: '16px',
         }}
       >
         <MuiButton
           variant="contained" onClick={saveAll} disabled={saving || changedKeys.length === 0}
           sx={{
-            background: 'linear-gradient(135deg, #d4a857, #e8915a)',
+            background: 'linear-gradient(135deg, #8b4660, #74374f)',
             fontWeight: 700, borderRadius: '999px', px: 4, py: 1.2,
             '&.Mui-disabled': { background: 'rgba(255,255,255,0.08)', color: '#6b6058' },
           }}
@@ -827,7 +827,7 @@ export default function AdminContent() {
         </MuiButton>
 
         {changedKeys.length > 0 ? (
-          <Typography sx={{ fontSize: '0.88rem', color: '#e8915a', fontWeight: 600 }}>
+          <Typography sx={{ fontSize: '0.88rem', color: '#cf839e', fontWeight: 600 }}>
             Не сохранено: {changedKeys.length} полей
             {changedInLang > 0 && ` (на этом языке: ${changedInLang})`}
           </Typography>

@@ -48,7 +48,7 @@ export default function AdminDashboard() {
     </Box>
     <Grid container spacing={2}>
       {shortcuts.map(item => <Grid item xs={12} sm={6} lg={4} key={item.to}>
-        <Button component={Link} to={item.to} fullWidth variant="outlined" sx={{ height: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', flexDirection: 'column', padding: '20px', borderRadius: '18px', borderColor: '#d4a85755', textAlign: 'left' }}>
+        <Button component={Link} to={item.to} fullWidth variant="outlined" sx={{ height: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', flexDirection: 'column', padding: '20px', borderRadius: '18px', borderColor: '#e2aec055', textAlign: 'left' }}>
           <Typography component="span" sx={{ fontSize: '18px', fontWeight: 700, mb: '6px' }}>{item.title} →</Typography>
           <Typography component="span" sx={{ fontSize: '14px', color: '#c4b8ab' }}>{item.text}</Typography>
         </Button>
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: '12px', height: '200px' }}>
         {stats.days.map(day => <Box key={day.day} sx={{ flex: 1, minWidth: '0px', textAlign: 'center' }}>
           <Typography sx={{ fontSize: '12px', mb: '6px' }}>{day.visits}</Typography>
-          <Box sx={{ height: `${day.visits / maxVisits * 140}px`, minHeight: day.visits ? '2px' : '0px', borderRadius: '8px 8px 0 0', background: '#d4a857' }} />
+          <Box sx={{ height: `${day.visits / maxVisits * 140}px`, minHeight: day.visits ? '2px' : '0px', borderRadius: '8px 8px 0 0', background: '#e2aec0' }} />
           <Typography sx={{ fontSize: '12px', mt: '8px', color: '#c4b8ab' }}>{new Date(day.day).toLocaleDateString('ru-RU', { weekday: 'short', timeZone: 'Asia/Dushanbe' })}</Typography>
         </Box>)}
       </Box>

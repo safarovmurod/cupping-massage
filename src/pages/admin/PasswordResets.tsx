@@ -31,16 +31,16 @@ const inputSx = {
   '& .MuiOutlinedInput-root': {
     color: '#f5ede4',
     '& fieldset': { borderColor: 'rgba(255,255,255,0.12)' },
-    '&:hover fieldset': { borderColor: 'rgba(212,168,87,0.4)' },
-    '&.Mui-focused fieldset': { borderColor: '#d4a857' },
+    '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
+    '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
   '& .MuiInputLabel-root': { color: '#8a7f76' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#d4a857' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
 const STATUS = {
-  pending:     { label: 'Ожидает кода',  color: '#e8915a', bg: 'rgba(232,145,90,0.15)' },
-  code_issued: { label: 'Код выдан',     color: '#d4a857', bg: 'rgba(212,168,87,0.15)' },
+  pending:     { label: 'Ожидает кода',  color: '#cf839e', bg: 'rgba(207,131,158,0.15)' },
+  code_issued: { label: 'Код выдан',     color: '#e2aec0', bg: 'rgba(226,174,192,0.15)' },
   used:        { label: 'Пароль изменён', color: '#25D366', bg: 'rgba(37,211,102,0.15)' },
   rejected:    { label: 'Отклонён / истёк', color: '#ef5350', bg: 'rgba(239,83,80,0.15)' },
 }
@@ -124,7 +124,7 @@ export default function PasswordResets() {
           </Typography>
         </Box>
         <MuiButton onClick={load} startIcon={<RefreshIcon />} variant="outlined"
-          sx={{ borderColor: 'rgba(212,168,87,0.4)', color: '#d4a857', textTransform: 'none', borderRadius: '999px' }}>
+          sx={{ borderColor: 'rgba(226,174,192,0.4)', color: '#e2aec0', textTransform: 'none', borderRadius: '999px' }}>
           Обновить
         </MuiButton>
       </Box>
@@ -136,7 +136,7 @@ export default function PasswordResets() {
       )}
 
       {/* Выдать код вручную по email */}
-      <Card sx={{ background: '#221c2a', border: '1px solid rgba(212,168,87,0.2)', borderRadius: '16px', mb: 3 }}>
+      <Card sx={{ background: 'var(--admin-panel)', border: '1px solid rgba(226,174,192,0.2)', borderRadius: '16px', mb: 3 }}>
         <CardContent>
           <Typography sx={{ fontWeight: 600, color: '#f5ede4', mb: 0.5, fontSize: '0.95rem' }}>
             Выдать код сразу (без заявки)
@@ -149,18 +149,18 @@ export default function PasswordResets() {
             <TextField size="small" label="Email клиента" type="email" value={manualEmail}
               onChange={e => setManualEmail(e.target.value)} sx={{ ...inputSx, minWidth: 260, flex: 1 }} />
             <MuiButton type="submit" variant="contained" disabled={manualBusy} startIcon={<KeyIcon />}
-              sx={{ background: 'linear-gradient(135deg,#d4a857,#e8915a)', fontWeight: 600, textTransform: 'none', borderRadius: '999px', px: 3, py: 1 }}>
+              sx={{ background: 'linear-gradient(135deg,#8b4660,#74374f)', fontWeight: 600, textTransform: 'none', borderRadius: '999px', px: 3, py: 1 }}>
               {manualBusy ? 'Создание…' : 'Создать код'}
             </MuiButton>
           </Box>
         </CardContent>
       </Card>
 
-      <Card sx={{ background: '#221c2a', border: '1px solid rgba(212,168,87,0.2)', borderRadius: '16px' }}>
+      <Card sx={{ background: 'var(--admin-panel)', border: '1px solid rgba(226,174,192,0.2)', borderRadius: '16px' }}>
         <CardContent sx={{ p: 0 }}>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-              <CircularProgress sx={{ color: '#d4a857' }} />
+              <CircularProgress sx={{ color: '#e2aec0' }} />
             </Box>
           ) : rows.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 6, px: 3 }}>
@@ -185,7 +185,7 @@ export default function PasswordResets() {
                         <TableCell sx={{ color: '#f5ede4', borderColor: 'rgba(255,255,255,0.07)' }}>
                           {row.email}
                           {row.note && (
-                            <Typography sx={{ fontSize: '0.72rem', color: '#e8915a', mt: 0.3 }}>{row.note}</Typography>
+                            <Typography sx={{ fontSize: '0.72rem', color: '#cf839e', mt: 0.3 }}>{row.note}</Typography>
                           )}
                         </TableCell>
                         <TableCell sx={{ borderColor: 'rgba(255,255,255,0.07)' }}>
@@ -195,7 +195,7 @@ export default function PasswordResets() {
                         <TableCell sx={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                           {row.code ? (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <Typography sx={{ fontFamily: 'monospace', fontSize: '1rem', fontWeight: 700, color: '#d4a857', letterSpacing: '0.15em' }}>
+                              <Typography sx={{ fontFamily: 'monospace', fontSize: '1rem', fontWeight: 700, color: '#e2aec0', letterSpacing: '0.15em' }}>
                                 {row.code}
                               </Typography>
                               <Tooltip title="Скопировать код">
@@ -210,13 +210,13 @@ export default function PasswordResets() {
                         <TableCell sx={{ color: expired ? '#ef5350' : '#c4b8ab', borderColor: 'rgba(255,255,255,0.07)', whiteSpace: 'nowrap', fontSize: '0.8rem' }}>
                           {row.expires_at ? fmt(row.expires_at) : '—'}
                         </TableCell>
-                        <TableCell sx={{ color: row.attempts > 0 ? '#e8915a' : '#c4b8ab', borderColor: 'rgba(255,255,255,0.07)' }}>{row.attempts}</TableCell>
+                        <TableCell sx={{ color: row.attempts > 0 ? '#cf839e' : '#c4b8ab', borderColor: 'rgba(255,255,255,0.07)' }}>{row.attempts}</TableCell>
                         <TableCell sx={{ borderColor: 'rgba(255,255,255,0.07)', whiteSpace: 'nowrap' }}>
                           <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
                             {row.status !== 'used' && (
                               <MuiButton size="small" variant="contained" disabled={busyId === row.id}
                                 onClick={() => issueCode(row)} startIcon={<KeyIcon sx={{ fontSize: 15 }} />}
-                                sx={{ background: 'linear-gradient(135deg,#d4a857,#e8915a)', fontWeight: 600, textTransform: 'none', fontSize: '0.72rem', borderRadius: '999px', px: 1.5 }}>
+                                sx={{ background: 'linear-gradient(135deg,#8b4660,#74374f)', fontWeight: 600, textTransform: 'none', fontSize: '0.72rem', borderRadius: '999px', px: 1.5 }}>
                                 {busyId === row.id ? '…' : row.code ? 'Новый код' : 'Выдать код'}
                               </MuiButton>
                             )}
@@ -245,7 +245,7 @@ export default function PasswordResets() {
         </CardContent>
       </Card>
 
-      <Divider sx={{ borderColor: 'rgba(212,168,87,0.15)', my: 3 }} />
+      <Divider sx={{ borderColor: 'rgba(226,174,192,0.15)', my: 3 }} />
       <Typography sx={{ fontSize: '0.78rem', color: '#6e645d', lineHeight: 1.7 }}>
         Как это работает: клиент открывает <b>/forgot-password</b> → вкладка «По коду от администратора» → вводит свой email
         → заявка появляется в этой таблице. Вы нажимаете «Выдать код», затем зелёную кнопку WhatsApp — откроется чат

@@ -12,11 +12,11 @@ import { supabase } from '../../lib/supabase.ts'
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(212,168,87,0.4)' },
-    '&.Mui-focused fieldset': { borderColor: '#d4a857' },
+    '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
+    '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
   '& .MuiInputLabel-root': { color: '#8a7f76' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#d4a857' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
 export default function AdminContacts() {
@@ -84,7 +84,7 @@ export default function AdminContacts() {
           </Box>
         </CardContent>
       </Card>
-      <MuiButton variant="contained" onClick={saveSettings} sx={{ alignSelf: 'flex-start', background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', px: 4 }}>Сохранить</MuiButton>
+      <MuiButton variant="contained" onClick={saveSettings} sx={{ alignSelf: 'flex-start', background: 'linear-gradient(135deg, #8b4660, #74374f)', fontWeight: 600, borderRadius: '999px', px: 4 }}>Сохранить</MuiButton>
       {saved && <Alert severity="success">Сохранено!</Alert>}
       {errorMessage && <Alert severity="error" role="alert">{errorMessage}</Alert>}
     </motion.div>

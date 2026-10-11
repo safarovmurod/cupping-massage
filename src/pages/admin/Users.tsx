@@ -44,11 +44,11 @@ import PasswordField from '../../components/common/PasswordField.tsx'
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(212,168,87,0.4)' },
-    '&.Mui-focused fieldset': { borderColor: '#d4a857' },
+    '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
+    '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
   '& .MuiInputLabel-root': { color: '#8a7f76' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#d4a857' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
 const ACTION_LABELS = {
@@ -262,8 +262,8 @@ export default function AdminUsers() {
       {/* Статистика */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4,1fr)' }, gap: 1.5, mb: 2.5 }}>
         {[
-          { label: 'Всего клиентов', value: stats.total, color: '#d4a857' },
-          { label: 'Администраторов', value: stats.admins, color: '#e8915a' },
+          { label: 'Всего клиентов', value: stats.total, color: '#e2aec0' },
+          { label: 'Администраторов', value: stats.admins, color: '#cf839e' },
           { label: 'Заблокировано', value: stats.blocked, color: '#ef5350' },
           { label: 'Профиль заполнен', value: stats.filled, color: '#25D366' },
         ].map((s) => (
@@ -324,13 +324,13 @@ export default function AdminUsers() {
                 <TableBody>
                   {filtered.map((u) => (
                     <TableRow key={u.id} hover
-                      sx={{ cursor: 'pointer', '&:hover': { background: 'rgba(212,168,87,0.06)' } }}
+                      sx={{ cursor: 'pointer', '&:hover': { background: 'rgba(226,174,192,0.06)' } }}
                       onClick={() => openDetails(u)}
                     >
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
                           <Avatar src={u.avatar_url || undefined}
-                            sx={{ width: 34, height: 34, background: 'linear-gradient(135deg,#d4a857,#e8915a)', fontSize: '0.85rem' }}>
+                            sx={{ width: 34, height: 34, background: 'linear-gradient(135deg,#8b4660,#74374f)', fontSize: '0.85rem' }}>
                             {(u.full_name || u.email || '?')[0]?.toUpperCase()}
                           </Avatar>
                           <Box>
@@ -347,7 +347,7 @@ export default function AdminUsers() {
                         <Chip label={u.role === 'admin' ? 'Админ' : 'Клиент'} size="small"
                           sx={{
                             height: 22, fontSize: '0.72rem',
-                            background: u.role === 'admin' ? 'linear-gradient(135deg,#d4a857,#e8915a)' : 'rgba(255,255,255,0.08)',
+                            background: u.role === 'admin' ? 'linear-gradient(135deg,#8b4660,#74374f)' : 'rgba(255,255,255,0.08)',
                             color: u.role === 'admin' ? '#fff' : '#c4b8ab',
                           }} />
                       </TableCell>
@@ -364,7 +364,7 @@ export default function AdminUsers() {
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap' }}>
                         <Tooltip title="Полная информация">
-                          <IconButton size="small" sx={{ color: '#d4a857' }}
+                          <IconButton size="small" sx={{ color: '#e2aec0' }}
                             onClick={(e) => { e.stopPropagation(); openDetails(u) }}>
                             <VisibilityIcon sx={{ fontSize: 19 }} />
                           </IconButton>
@@ -388,12 +388,12 @@ export default function AdminUsers() {
 
       {/* ===== КАРТОЧКА КЛИЕНТА ===== */}
       <Dialog open={!!selected} onClose={() => setSelected(null)} maxWidth="md" fullWidth
-        PaperProps={{ sx: { background: '#221c2a', border: '1px solid rgba(212,168,87,0.25)', borderRadius: '18px' } }}>
+        PaperProps={{ sx: { background: 'var(--admin-panel)', border: '1px solid rgba(226,174,192,0.25)', borderRadius: '18px' } }}>
         {selected && (
           <>
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 2, pb: 1.5 }}>
               <Avatar src={selected.avatar_url || undefined}
-                sx={{ width: 56, height: 56, background: 'linear-gradient(135deg,#d4a857,#e8915a)', fontSize: '1.4rem' }}>
+                sx={{ width: 56, height: 56, background: 'linear-gradient(135deg,#8b4660,#74374f)', fontSize: '1.4rem' }}>
                 {(selected.full_name || selected.email || '?')[0]?.toUpperCase()}
               </Avatar>
               <Box sx={{ flex: 1 }}>
@@ -412,8 +412,8 @@ export default function AdminUsers() {
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{
               px: 3, borderBottom: '1px solid rgba(255,255,255,0.08)',
               '& .MuiTab-root': { color: '#8a7f76', textTransform: 'none', fontWeight: 600, minHeight: 44 },
-              '& .Mui-selected': { color: '#d4a857 !important' },
-              '& .MuiTabs-indicator': { background: '#d4a857' },
+              '& .Mui-selected': { color: '#e2aec0 !important' },
+              '& .MuiTabs-indicator': { background: '#e2aec0' },
             }}>
               <Tab label="Личные данные" />
               <Tab label="Аккаунт и доступ" />
@@ -485,7 +485,7 @@ export default function AdminUsers() {
                       <Box sx={{ mt: 2, display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
                         <MuiButton variant="outlined" startIcon={<LockResetIcon />}
                           onClick={() => setPwdDialog(true)}
-                          sx={{ borderColor: 'rgba(212,168,87,0.4)', color: '#d4a857', textTransform: 'none' }}>
+                          sx={{ borderColor: 'rgba(226,174,192,0.4)', color: '#e2aec0', textTransform: 'none' }}>
                           Сбросить пароль
                         </MuiButton>
                         <MuiButton variant="outlined" startIcon={<DeleteIcon />}
@@ -545,7 +545,7 @@ export default function AdminUsers() {
 
       {/* ДИАЛОГ СБРОСА ПАРОЛЯ */}
       <Dialog open={pwdDialog} onClose={() => setPwdDialog(false)} maxWidth="xs" fullWidth
-        PaperProps={{ sx: { background: '#221c2a', border: '1px solid rgba(212,168,87,0.25)', borderRadius: '16px' } }}>
+        PaperProps={{ sx: { background: 'var(--admin-panel)', border: '1px solid rgba(226,174,192,0.25)', borderRadius: '16px' } }}>
         <DialogTitle sx={{ color: '#f5ede4' }}>Новый пароль для клиента</DialogTitle>
         <DialogContent>
           <Typography sx={{ fontSize: '0.85rem', color: '#8a7f76', mb: 2 }}>
@@ -558,7 +558,7 @@ export default function AdminUsers() {
             InputProps={{ endAdornment: (
               <InputAdornment position="end">
                 <Tooltip title="Сгенерировать">
-                  <IconButton size="small" sx={{ color: '#d4a857' }}
+                  <IconButton size="small" sx={{ color: '#e2aec0' }}
                     onClick={() => setNewPwd(generateSecurePassword())}>
                     <ContentCopyIcon sx={{ fontSize: 18 }} />
                   </IconButton>
@@ -572,7 +572,7 @@ export default function AdminUsers() {
             Отмена
           </MuiButton>
           <MuiButton variant="contained" onClick={resetPassword} disabled={pwdSaving || !isStrongPassword(newPwd)}
-            sx={{ background: 'linear-gradient(135deg,#d4a857,#e8915a)', fontWeight: 600, textTransform: 'none' }}>
+            sx={{ background: 'linear-gradient(135deg,#8b4660,#74374f)', fontWeight: 600, textTransform: 'none' }}>
             {pwdSaving ? 'Сохранение…' : 'Установить пароль'}
           </MuiButton>
         </DialogActions>
@@ -580,7 +580,7 @@ export default function AdminUsers() {
 
       {/* ДИАЛОГ: удалить одного пользователя */}
       <Dialog open={!!delTarget} onClose={() => setDelTarget(null)} maxWidth="xs" fullWidth
-        PaperProps={{ sx: { background: '#221c2a', border: '1px solid rgba(239,83,80,0.3)', borderRadius: '16px' } }}>
+        PaperProps={{ sx: { background: 'var(--admin-panel)', border: '1px solid rgba(239,83,80,0.3)', borderRadius: '16px' } }}>
         <DialogTitle sx={{ color: '#f5ede4' }}>Удалить пользователя?</DialogTitle>
         <DialogContent>
           <Typography sx={{ fontSize: '0.88rem', color: '#c4b8ab', mb: 1 }}>
@@ -613,12 +613,12 @@ export default function AdminUsers() {
 
       {/* ДИАЛОГ: удалить все тестовые аккаунты */}
       <Dialog open={cleanDialog} onClose={() => setCleanDialog(false)} maxWidth="xs" fullWidth
-        PaperProps={{ sx: { background: '#221c2a', border: '1px solid rgba(239,83,80,0.3)', borderRadius: '16px' } }}>
+        PaperProps={{ sx: { background: 'var(--admin-panel)', border: '1px solid rgba(239,83,80,0.3)', borderRadius: '16px' } }}>
         <DialogTitle sx={{ color: '#f5ede4' }}>Удалить тестовые аккаунты?</DialogTitle>
         <DialogContent>
           <Typography sx={{ fontSize: '0.85rem', color: '#c4b8ab', mb: 2 }}>
             Будут удалены все аккаунты, чей email начинается с <b>test</b> — например
-            <span style={{ color: '#d4a857' }}> test1788198399@gmail.com</span>.
+            <span style={{ color: '#e2aec0' }}> test1788198399@gmail.com</span>.
           </Typography>
           <Alert severity="info" sx={{ fontSize: '0.8rem' }}>
             Администраторы и ваш собственный аккаунт НЕ будут затронуты. Реальные клиенты тоже в безопасности.

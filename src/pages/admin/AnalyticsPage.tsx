@@ -85,7 +85,7 @@ export default function AdminAnalytics() {
       {summary.sources.length === 0 && <Typography>Записанных просмотров пока нет.</Typography>}
       <Stack gap="14px">{summary.sources.map(item => <Box key={item.key}>
         <Stack direction="row" justifyContent="space-between" gap="12px"><Typography>{sources[item.key] || item.key}</Typography><Typography sx={{ fontSize: '13px', color: '#c4b8ab' }}>{item.visitors} браузеров · {item.views} просмотров</Typography></Stack>
-        <Box sx={{ height: '6px', mt: '6px', background: '#ffffff15', borderRadius: '6px' }}><Box sx={{ height: '100%', width: `${item.views / Math.max(1, summary.totalVisits) * 100}%`, background: '#d4a857', borderRadius: '6px' }} /></Box>
+        <Box sx={{ height: '6px', mt: '6px', background: '#ffffff15', borderRadius: '6px' }}><Box sx={{ height: '100%', width: `${item.views / Math.max(1, summary.totalVisits) * 100}%`, background: '#e2aec0', borderRadius: '6px' }} /></Box>
       </Box>)}</Stack>
     </CardContent></Card>}
     <Card><CardContent>

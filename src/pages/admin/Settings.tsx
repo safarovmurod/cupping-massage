@@ -22,11 +22,11 @@ import { isStrongPassword } from '../../lib/password.ts'
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(212,168,87,0.4)' },
-    '&.Mui-focused fieldset': { borderColor: '#d4a857' },
+    '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
+    '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
   '& .MuiInputLabel-root': { color: '#8a7f76' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#d4a857' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
 export default function AdminSettings() {
@@ -67,7 +67,7 @@ export default function AdminSettings() {
           <Typography variant="h6" sx={{ mb: 2 }}>Смена пароля</Typography>
           <Box component="form" onSubmit={handleChangePassword} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <PasswordField label="Новый пароль" value={newPassword} onChange={e => setNewPassword(e.target.value)} sx={inputSx} />
-            <MuiButton type="submit" variant="contained" sx={{ alignSelf: 'flex-start', background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', px: 4 }}>Сохранить пароль</MuiButton>
+            <MuiButton type="submit" variant="contained" sx={{ alignSelf: 'flex-start', background: 'linear-gradient(135deg, #8b4660, #74374f)', fontWeight: 600, borderRadius: '999px', px: 4 }}>Сохранить пароль</MuiButton>
           </Box>
           {msg && <Alert severity={msg.includes('success') ? 'success' : 'error'} sx={{ mt: 2 }}>{msg}</Alert>}
         </CardContent></Card>
@@ -86,7 +86,7 @@ export default function AdminSettings() {
           )}
         </CardContent></Card>
 
-        <MuiButton variant="outlined" onClick={() => signOut()} sx={{ alignSelf: 'flex-start', borderColor: 'rgba(255,255,255,0.1)', color: '#c4b8ab', borderRadius: '999px', px: 4, '&:hover': { borderColor: '#d4a857', color: '#d4a857' } }}>Выйти из админки</MuiButton>
+        <MuiButton variant="outlined" onClick={() => signOut()} sx={{ alignSelf: 'flex-start', borderColor: 'rgba(255,255,255,0.1)', color: '#c4b8ab', borderRadius: '999px', px: 4, '&:hover': { borderColor: '#e2aec0', color: '#e2aec0' } }}>Выйти из админки</MuiButton>
       </Box>
     </motion.div>
   )
