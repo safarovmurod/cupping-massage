@@ -10,6 +10,7 @@ import { LanguageProvider } from './contexts/LanguageContext.tsx'
 import { ThemeProvider } from './contexts/ThemeContext.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import './styles/index.css'
+import './styles/design-tokens.css'
 
 const muiDarkTheme = createTheme({
   palette: {

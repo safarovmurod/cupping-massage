@@ -1,0 +1,24 @@
+/* Shared visual foundations. Public brand styles are scoped to mm-*; admin updates reuse these tokens without changing auth logic. */
+:root {
+  --brand-page: #fbf6f1;
+  --brand-surface: #fffdfb;
+  --brand-blush: #f8e9e8;
+  --brand-ink: #30242e;
+  --brand-muted: #62515b;
+  --brand-accent: #8b4660;
+  --brand-accent-dark: #74374f;
+  --brand-accent-light: #f5e2e8;
+  --brand-border: #e7d3d9;
+  --brand-focus: #8b4660;
+  --brand-radius-small: 12px;
+  --brand-radius-medium: 16px;
+  --brand-radius-card: 24px;
+  --brand-control-height: 48px;
+  --brand-space-1: 4px;
+  --brand-space-2: 8px;
+  --brand-space-3: 12px;
+  --brand-space-4: 16px;
+  --brand-space-6: 24px;
+  --brand-space-8: 32px;
+  --brand-shadow: 0 12px 32px rgba(91,50,67,.10);
+}
