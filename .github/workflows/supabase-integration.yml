@@ -1,0 +1,101 @@
+name: Isolated Supabase integration
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: isolated-supabase-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  integration:
+    if: github.repository == 'safarovmurod/cupping-massage' && github.event.pull_request.number == 2 && github.head_ref == 'feature/mama-i-malish-redesign'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+      # Official v3 ref verified through GitHub API and reviewed action.yml.
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3
+        with:
+          version: '2.120.0'
+      - name: Install locked app dependencies
+        run: npm ci
+      - name: Check CLI commands, SQL sources and isolation before startup
+        run: |
+          mkdir -p "$RUNNER_TEMP/isolated-evidence"
+          supabase --version
+          supabase --help
+          supabase start --help
+          supabase status --help
+          supabase db reset --help
+          supabase stop --help
+          docker version
+          node --experimental-strip-types --test tests/isolated-staging.test.ts tests/isolated-ci.test.ts
+          node --experimental-strip-types testing/isolated/ci-local.ts preflight | tee "$RUNNER_TEMP/isolated-evidence/preflight.log"
+      - name: Start real isolated Supabase with reviewed migrations and synthetic seed
+        id: start
+        working-directory: testing/isolated
+        run: |
+          set -o pipefail
+          supabase start --exclude studio,postgres-meta,realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor 2>&1 |
+            node --experimental-strip-types ci-local.ts redact | tee "$RUNNER_TEMP/isolated-evidence/start.log"
+          node --experimental-strip-types ci-local.ts status | tee "$RUNNER_TEMP/isolated-evidence/status.log"
+      - name: Reproduce schema with explicit local reset
+        id: reset
+        working-directory: testing/isolated
+        run: |
+          set -o pipefail
+          supabase db reset --local --yes 2>&1 |
+            node --experimental-strip-types ci-local.ts redact | tee "$RUNNER_TEMP/isolated-evidence/reset.log"
+          node --experimental-strip-types ci-local.ts status
+      - name: Real PostgreSQL RLS, TRUNCATE denial, rollback and reapply
+        id: acl
+        run: |
+          set -o pipefail
+          bash testing/isolated/run-acl-local.sh 2>&1 |
+            node --experimental-strip-types testing/isolated/ci-local.ts redact | tee "$RUNNER_TEMP/isolated-evidence/acl-rollback.log"
+      - name: Real Auth, RLS, CRUD, RPC and password recovery
+        id: api
+        run: |
+          set -o pipefail
+          node testing/isolated/test-auth-crud.mjs 2>&1 |
+            node --experimental-strip-types testing/isolated/ci-local.ts redact | tee "$RUNNER_TEMP/isolated-evidence/auth-rls-crud-rpc.log"
+      - name: Remove only this runner's isolated stack
+        if: always() && steps.start.outcome != 'skipped'
+        working-directory: testing/isolated
+        run: |
+          set -o pipefail
+          supabase stop --project-id mama_i_malish_isolated_2026 --no-backup 2>&1 |
+            node --experimental-strip-types ci-local.ts redact | tee "$RUNNER_TEMP/isolated-evidence/stop.log"
+      - name: Save credential-free integration evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: isolated-supabase-evidence
+          path: ${{ runner.temp }}/isolated-evidence/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Record actual outcomes
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          Real isolated Supabase only; no production credentials or remote DB commands.
+
+          | Check | Actual step outcome |
+          | --- | --- |
+          | Supabase start / PG17 / loopback | ${{ steps.start.outcome }} |
+          | Local schema reset | ${{ steps.reset.outcome }} |
+          | RLS / nine-table TRUNCATE / rollback | ${{ steps.acl.outcome }} |
+          | Real Auth / CRUD / RPC / recovery | ${{ steps.api.outcome }} |
+
+          Google OAuth and hosted Preview are not covered by this workflow.
+          EOF

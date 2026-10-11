@@ -1,11 +1,12 @@
 """Local Chromium and axe-core audit. All Supabase requests are intercepted.
-No real auth, admin records or customer data are used; real integration is BLOCKED
-until owner supplies a disposable environment with its own test accounts.
+No real auth, admin records or customer data are used; this UI audit does not
+replace the separate isolated Supabase integration tests.
 Run: python tests/browser/accessibility-audit.py http://127.0.0.1:4173
 """
 import base64
 import datetime
 import json
+import os
 import re
 import sys
 import time
@@ -14,9 +15,14 @@ from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright, expect
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:4173").rstrip("/")
+BASE_URL = urlparse(BASE)
+assert (BASE_URL.scheme == "http" and BASE_URL.hostname in ("127.0.0.1", "localhost")
+        and not BASE_URL.username and not BASE_URL.password
+        and not BASE_URL.query and not BASE_URL.fragment and not BASE_URL.path), \
+    "Accessibility audit requires a loopback HTTP preview origin, never a deployed website."
 ROOT = Path(__file__).resolve().parents[2]
-AXE = ROOT / "node_modules" / "axe-core" / "axe.min.js"
-SHOTS = Path("/tmp/mama-a11y-screenshots")
+AXE = Path(os.environ.get("AXE_SCRIPT_PATH", str(ROOT / "node_modules" / "axe-core" / "axe.min.js")))
+SHOTS = Path(os.environ.get("BROWSER_EVIDENCE_DIR", "/tmp/mama-a11y-screenshots"))
 SHOTS.mkdir(exist_ok=True, parents=True)
 LANGS = ("ru", "tj", "en")
 WCAG_TAGS = ("wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa")
@@ -62,6 +68,18 @@ checks = 0
 axe_scans = 0
 mock_writes = []
 
+
+def guard_local_network(context):
+    # Page-level mock handlers run first. Other traffic must stay on loopback;
+    # this also blocks external iframe/asset requests before they reach the wire.
+    def local_only(route):
+        url = urlparse(route.request.url)
+        if (url.scheme, url.netloc) == (BASE_URL.scheme, BASE_URL.netloc):
+            route.continue_()
+        else:
+            route.abort("blockedbyclient")
+    context.route("**/*", local_only)
+
 def mock_api(route):
     request = route.request
     parsed = urlparse(request.url)
@@ -91,7 +109,9 @@ def mock_api(route):
 
 def new_context(browser, width=390, lang="ru", role=None):
     context = browser.new_context(viewport={"width": width, "height": 900},
-                                  reduced_motion="reduce", device_scale_factor=1)
+                                  reduced_motion="reduce", device_scale_factor=1,
+                                  service_workers="block")
+    guard_local_network(context)
     storage = json.dumps(fake_session)
     initial = """try {localStorage.setItem('cookieConsent','declined');
         localStorage.setItem('lang', %s); %s} catch(e) {}""" % (

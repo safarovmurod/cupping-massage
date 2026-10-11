@@ -1,5 +1,5 @@
 -- Run ONLY with the dedicated local Docker Postgres container and -v
--- ON_ERROR_STOP=1. No TRUNCATE statement is ever executed by these assertions.
+-- ON_ERROR_STOP=1. Real TRUNCATE runs inside rolled-back subtransactions only.
 -- Before UP / after staging-only emergency rollback: all nine grants exist.
 DO $check$
 DECLARE table_name text; rel_id oid;
@@ -18,4 +18,20 @@ BEGIN
     END IF;
   END LOOP;
 END $check$;
-SELECT 'PASS: nine staging ACLs before change' AS message;
+DO $exercise$
+DECLARE caller text;
+BEGIN
+  FOREACH caller IN ARRAY ARRAY['anon', 'authenticated', 'service_role'] LOOP
+    BEGIN
+      EXECUTE format('SET LOCAL ROLE %I', caller);
+      TRUNCATE TABLE public.admin_activity, public.analytics_events, public.leads,
+        public.password_reset_requests, public.profiles, public.services,
+        public.site_content, public.site_settings, public.user_activity;
+      -- This exception rolls back TRUNCATE and SET ROLE; no synthetic row is lost.
+      RAISE EXCEPTION USING ERRCODE = 'ZX001', MESSAGE = 'rollback TRUNCATE exercise';
+    EXCEPTION WHEN SQLSTATE 'ZX001' THEN
+      RAISE NOTICE 'PASS: baseline/rollback real TRUNCATE by %, changes rolled back', caller;
+    END;
+  END LOOP;
+END $exercise$;
+SELECT 'PASS: nine staging ACLs and real rolled-back TRUNCATE before change' AS message;

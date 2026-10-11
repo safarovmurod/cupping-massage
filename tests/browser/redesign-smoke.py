@@ -5,20 +5,41 @@ data is read or written. For CI: python tests/browser/redesign-smoke.py URL.
 """
 import re
 import sys
+from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright, expect
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:4173").rstrip("/")
+BASE_URL = urlparse(BASE)
+assert (BASE_URL.scheme == "http" and BASE_URL.hostname in ("127.0.0.1", "localhost")
+        and not BASE_URL.username and not BASE_URL.password
+        and not BASE_URL.query and not BASE_URL.fragment and not BASE_URL.path), \
+    "Browser smoke requires a loopback HTTP preview origin, never a deployed website."
 WIDTHS = [320, 375, 390, 430, 768, 1024, 1440]
 LANGUAGES = {"ru": "Язык сайта", "tj": "Забони сомона", "en": "Website language"}
 PATHS = ["/", "/contact", "/login", "/register",
          "/forgot-password", "/reset-password", "/not-found-smoke"]
 checks = 0
+mock_calls = []
+
+
+def guard_local_network(context):
+    # Page-level fixture handlers run first. All other requests must stay on the
+    # local preview, including frames/assets; external services are never visited.
+    def local_only(route):
+        url = urlparse(route.request.url)
+        if (url.scheme, url.netloc) == (BASE_URL.scheme, BASE_URL.netloc):
+            route.continue_()
+        else:
+            route.abort("blockedbyclient")
+    context.route("**/*", local_only)
 
 
 def attach_mocks(page):
     # No contact with the production database or Auth services.
-    page.route("https://ci-supabase.invalid/**", lambda route: route.fulfill(
-        status=200, content_type="application/json", body="[]"))
+    def mock_api(route):
+        mock_calls.append((route.request.method, urlparse(route.request.url).path))
+        route.fulfill(status=200, content_type="application/json", body="[]")
+    page.route("https://ci-supabase.invalid/**", mock_api)
 
 
 with sync_playwright() as playwright:
@@ -31,7 +52,9 @@ with sync_playwright() as playwright:
                 viewport={"width": width, "height": 850},
                 reduced_motion="reduce",
                 locale="en-US",
+                service_workers="block",
             )
+            guard_local_network(context)
             context.add_init_script(
                 "try { localStorage.setItem('lang', '" + language +
                 "'); localStorage.setItem('cookieConsent', 'declined') } catch {}"
@@ -58,7 +81,8 @@ with sync_playwright() as playwright:
 
     # Route handling and access boundary as a guest; this does NOT replace a
     # signed-in admin RLS/CRUD integration test.
-    context = browser.new_context(viewport={"width": 390, "height": 850})
+    context = browser.new_context(viewport={"width": 390, "height": 850}, service_workers="block")
+    guard_local_network(context)
     context.add_init_script("localStorage.setItem('cookieConsent','declined')")
     page = context.new_page()
     errors = []
@@ -97,9 +121,12 @@ with sync_playwright() as playwright:
     # Invalid form must display validation and must never call Supabase insert.
     page.goto(BASE + "/contact")
     expect(page.locator("#contact-name")).to_be_visible()
+    mock_calls.clear()
     page.get_by_role("button", name="Submit").click()
     expect(page.locator("#contact-name")).to_have_attribute("aria-invalid", "true")
     expect(page.locator("#contact-phone")).to_have_attribute("aria-invalid", "true")
+    assert not any(method == "POST" and path == "/rest/v1/leads"
+                   for method, path in mock_calls), mock_calls
     checks += 1
     print("PASS client-side form validation with no database insert", flush=True)
     context.close()

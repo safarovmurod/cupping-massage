@@ -7,11 +7,15 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createClient } from '@supabase/supabase-js'
+import { assertRpcDenied } from './assert-rpc-denied.ts'
 
 const workdir = dirname(fileURLToPath(import.meta.url))
 const expectedConfig = resolve(workdir, 'supabase', 'config.toml')
 const fs = await import('node:fs')
 assert.match(fs.readFileSync(expectedConfig, 'utf8'), /project_id\s*=\s*"mama_i_malish_isolated_2026"/)
+assert.match(fs.readFileSync(expectedConfig, 'utf8'), /major_version\s*=\s*17/)
+assert.ok(!fs.existsSync(resolve(workdir, 'supabase', '.temp', 'project-ref')),
+  'BLOCKED: the isolated project must not be linked to a remote Supabase project')
 let status
 try {
   status = execFileSync('supabase', ['status', '-o', 'env'], {
@@ -52,6 +56,8 @@ const newPassword = 'Bb2!' + randomBytes(21).toString('base64url')
 const adminPassword = 'Cc3!' + randomBytes(21).toString('base64url')
 const samplePhone = '992900' + Array.from({length:6},()=>Math.floor(Math.random()*10)).join('')
 let userId, adminId, leadId, deletionFixtureId
+const contentFixtures = []
+const serviceFixtures = []
 let checks = 0
 function ok(result, description) {
   if (result.error) throw new Error(`${description}: ${result.error.code || 'API error'}`)
@@ -60,12 +66,15 @@ function ok(result, description) {
   return result.data
 }
 function noRows(value) { return Array.isArray(value) && value.length === 0 }
-async function forbiddenRpc(name, args) {
-  const { data, error } = await ordinary.rpc(name, args)
-  assert.ok(error || (data && data.ok !== true && (data.error || data.ok === false)),
-    `ordinary user bypass of ${name}`)
+function sqlDenied(result, description) {
+  assert.equal(result.error?.code,'42501',`${description}: SQL permission/RLS denial required`)
   checks++
-  console.log('PASS non-admin denied by', name)
+  console.log('PASS',description)
+}
+async function forbiddenRpc(caller, role, name, args) {
+  assertRpcDenied(await caller.rpc(name, args), `${role} ${name}`)
+  checks++
+  console.log(`PASS ${role} denied by ${name} with explicit permission/guard evidence`)
 }
 try {
   // Registration via real GoTrue, login/logout via real Auth endpoints.
@@ -83,8 +92,10 @@ try {
   }), 'create local synthetic admin identity')
   adminId = created.user?.id
   assert.ok(adminId)
-  ok(await service.from('profiles').update({ role:'admin', is_active:true }).eq('id',adminId),
-    'assign staging-only admin role')
+  const adminProfile=ok(await service.from('profiles').update({ role:'admin', is_active:true })
+    .eq('id',adminId).select('id,role,is_active').single(), 'assign isolated-only admin role')
+  assert.equal(adminProfile.role,'admin')
+  assert.equal(adminProfile.is_active,true)
   ok(await administrator.auth.signInWithPassword({ email:adminEmail, password:adminPassword }),
     'real test admin sign-in')
 
@@ -95,8 +106,8 @@ try {
     'administrator analytics invoker RPC')
   assert.ok(overview && typeof overview === 'object')
   const notAdminSummary=await ordinary.rpc('admin_analytics_summary')
-  assert.ok(notAdminSummary.error || !notAdminSummary.data,
-    'ordinary user cannot inspect admin analytics')
+  assert.equal(notAdminSummary.error?.code,'42501',
+    'ordinary analytics RPC must fail for permission, not a missing function')
   checks++
   console.log('PASS ordinary analytics invoker RPC denied')
   const self=ok(await ordinary.from('profiles').select('id,role,is_active').eq('id',userId),
@@ -107,7 +118,8 @@ try {
     'RLS denies other user profile')))
 
   // Trigger must silently override privileged update even when the SQL UPDATE succeeds.
-  await ordinary.from('profiles').update({ role:'admin', is_active:false }).eq('id',userId)
+  ok(await ordinary.from('profiles').update({ role:'admin', is_active:false }).eq('id',userId),
+    'attempt privileged profile update reaches actual trigger')
   const stillRegular=ok(await service.from('profiles').select('role,is_active').eq('id',userId).single(),
     'profile escalation check from staging service client')
   assert.equal(stillRegular.role,'user')
@@ -121,7 +133,10 @@ try {
     ['admin_issue_reset_code',{p_request_id:randomUUID()}],
     ['admin_set_user_password',{target_user_id:adminId,new_password:'Aa1!SyntheticOnly123456'}],
   ]
-  for (const [name,args] of adminRpc) await forbiddenRpc(name,args)
+  for (const [name,args] of adminRpc) {
+    await forbiddenRpc(ordinary,'ordinary user',name,args)
+    await forbiddenRpc(anonymous,'anonymous user',name,args)
+  }
   const details=ok(await administrator.rpc('admin_get_user_details',{target_user_id:userId}),
     'administrator reads only synthetic user details by RPC')
   assert.ok(details && details.auth && details.profile)
@@ -153,14 +168,16 @@ try {
   assert.equal(rows.length,1)
   leadId=rows[0].id
   assert.equal(rows[0].status,'new')
-  await ordinary.from('leads').update({status:'completed'}).eq('id',leadId)
+  assert.ok(noRows(ok(await ordinary.from('leads').update({status:'completed'}).eq('id',leadId)
+    .select('id'), 'ordinary lead UPDATE affects zero rows')))
   assert.equal((ok(await administrator.from('leads').select('status').eq('id',leadId).single(),
     'no ordinary lead UPDATE')).status,'new')
   ok(await administrator.from('leads').update({status:'in_progress'}).eq('id',leadId),
     'admin UPDATE synthetic lead')
   assert.equal((ok(await administrator.from('leads').select('status').eq('id',leadId).single(),
     'verify admin lead UPDATE')).status,'in_progress')
-  await ordinary.from('leads').delete().eq('id',leadId)
+  assert.ok(noRows(ok(await ordinary.from('leads').delete().eq('id',leadId).select('id'),
+    'ordinary lead DELETE affects zero rows')))
   assert.equal((ok(await administrator.from('leads').select('id').eq('id',leadId),
     'no ordinary lead DELETE')).length,1)
   ok(await administrator.from('leads').delete().eq('id',leadId),
@@ -171,15 +188,25 @@ try {
 
   for (const table of ['site_content','site_settings']) {
     const key=`sandbox.integration.${uid}.${table}`
+    contentFixtures.push({table,key})
+    sqlDenied(await anonymous.from(table).insert({key:`${key}.anonymous`,value:'forbidden'}),
+      `RLS denies anonymous ${table} INSERT`)
+    sqlDenied(await ordinary.from(table).insert({key:`${key}.ordinary`,value:'forbidden'}),
+      `RLS denies ordinary ${table} INSERT`)
     ok(await administrator.from(table).insert({key,value:'synthetic-v1'}),
       `admin ${table} INSERT`)
     assert.equal((ok(await anonymous.from(table).select('value').eq('key',key).single(),
       `public ${table} SELECT`)).value,'synthetic-v1')
-    await ordinary.from(table).update({value:'escalated'}).eq('key',key)
+    assert.ok(noRows(ok(await ordinary.from(table).update({value:'escalated'}).eq('key',key)
+      .select('key'), `ordinary ${table} UPDATE affects zero rows`)))
     assert.equal((ok(await administrator.from(table).select('value').eq('key',key).single(),
       `RLS denies ordinary ${table} UPDATE`)).value,'synthetic-v1')
     ok(await administrator.from(table).update({value:'synthetic-v2'}).eq('key',key),
       `admin ${table} UPDATE`)
+    assert.equal((ok(await anonymous.from(table).select('value').eq('key',key).single(),
+      `verify ${table} UPDATE through independent public client`)).value,'synthetic-v2')
+    assert.ok(noRows(ok(await ordinary.from(table).delete().eq('key',key).select('key'),
+      `ordinary ${table} DELETE affects zero rows`)))
     ok(await administrator.from(table).delete().eq('key',key),
       `admin ${table} DELETE`)
     assert.ok(noRows(ok(await anonymous.from(table).select('key').eq('key',key),
@@ -190,10 +217,47 @@ try {
   // EXECUTE from is_admin() without rewriting this policy in a separate review.
   assert.ok(Array.isArray(ok(await anonymous.from('services').select('id').limit(1),
     'anonymous services SELECT / is_admin policy')))
+  const serviceId=randomUUID()
+  serviceFixtures.push(serviceId)
+  ok(await administrator.from('services').insert({
+    id:serviceId,title:'Synthetic integration service',price:'Test only',is_active:false,
+  }),'admin synthetic service INSERT')
+  assert.ok(noRows(ok(await anonymous.from('services').select('id').eq('id',serviceId),
+    'public cannot read inactive service')))
+  assert.ok(noRows(ok(await ordinary.from('services').select('id').eq('id',serviceId),
+    'ordinary user cannot read inactive service')))
+  assert.equal((ok(await administrator.from('services').select('is_active').eq('id',serviceId).single(),
+    'admin reads inactive service')).is_active,false)
+  assert.ok(noRows(ok(await ordinary.from('services').update({is_active:true}).eq('id',serviceId)
+    .select('id'),'ordinary service UPDATE affects zero rows')))
+  ok(await administrator.from('services').update({is_active:true}).eq('id',serviceId),
+    'admin synthetic service UPDATE')
+  assert.equal((ok(await anonymous.from('services').select('id').eq('id',serviceId).single(),
+    'public reads active service')).id,serviceId)
+  assert.ok(noRows(ok(await ordinary.from('services').delete().eq('id',serviceId).select('id'),
+    'ordinary service DELETE affects zero rows')))
+  assert.equal(ok(await administrator.from('services').delete().eq('id',serviceId).select('id'),
+    'admin synthetic service DELETE').length,1)
+  assert.ok(noRows(ok(await anonymous.from('services').select('id').eq('id',serviceId),
+    'verify synthetic service removed')))
 
   // Password reset through actual SECURITY DEFINER public and admin RPCs.
+  assert.equal((ok(await anonymous.rpc('request_password_reset',{p_email:'invalid',p_lang:'ru'}),
+    'invalid reset request email rejected')).error,'invalid_email')
   assert.equal((ok(await anonymous.rpc('request_password_reset',{p_email:email,p_lang:'ru'}),
     'real anonymous password reset request')).ok,true)
+  for (let request=0;request<2;request++) {
+    assert.equal((ok(await anonymous.rpc('request_password_reset',{p_email:email,p_lang:'ru'}),
+      'synthetic reset request within three-per-hour limit')).ok,true)
+  }
+  assert.equal((ok(await anonymous.rpc('request_password_reset',{p_email:email,p_lang:'ru'}),
+    'fourth synthetic reset request is rate limited')).error,'too_many')
+  for (const [caller,role] of [[ordinary,'ordinary'],[anonymous,'anonymous']]) {
+    assert.ok(noRows(ok(await caller.from('password_reset_requests').select('id').eq('email',email),
+      `${role} cannot read reset codes`)))
+    sqlDenied(await caller.from('password_reset_requests').insert({email,user_id:userId}),
+      `${role} cannot directly INSERT reset request`)
+  }
   const issued=ok(await administrator.rpc('admin_create_reset_code_for_email',{p_email:email}),
     'real admin-issued synthetic reset code')
   assert.equal(issued.ok,true)
@@ -206,10 +270,40 @@ try {
     p_email:email,p_code:'bad',p_new_password:newPassword,
   }),'invalid reset code rejected')
   assert.equal(denied.ok,false)
-  const changed=ok(await anonymous.rpc('reset_password_with_code',{
+  assert.equal(denied.error,'bad_code')
+  assert.equal((ok(await service.from('password_reset_requests').select('attempts').eq('id',issued.id).single(),
+    'invalid code increments attempts')).attempts,1)
+  ok(await service.from('password_reset_requests').update({expires_at:new Date(Date.now()-60000).toISOString()})
+    .eq('id',issued.id),'expire only the synthetic reset fixture')
+  const expired=ok(await anonymous.rpc('reset_password_with_code',{
     p_email:email,p_code:issuedAgain.code,p_new_password:newPassword,
+  }),'expired synthetic reset code rejected')
+  assert.equal(expired.ok,false)
+  assert.equal(expired.error,'expired')
+  assert.equal((ok(await service.from('password_reset_requests').select('status,code').eq('id',issued.id).single(),
+    'expired code invalidated')).status,'rejected')
+  const fresh=ok(await administrator.rpc('admin_create_reset_code_for_email',{p_email:email}),
+    'issue fresh code after expired-code test')
+  assert.equal(fresh.ok,true)
+  const weak=ok(await anonymous.rpc('reset_password_with_code',{
+    p_email:email,p_code:fresh.code,p_new_password:'short',
+  }),'weak reset password rejected')
+  assert.equal(weak.ok,false)
+  assert.equal(weak.error,'weak_password')
+  const changed=ok(await anonymous.rpc('reset_password_with_code',{
+    p_email:email,p_code:fresh.code,p_new_password:newPassword,
   }),'real local reset code password flow')
   assert.equal(changed.ok,true)
+  const used=ok(await service.from('password_reset_requests').select('status,code,used_at').eq('id',fresh.id).single(),
+    'successful reset marks code used and clears it')
+  assert.equal(used.status,'used')
+  assert.equal(used.code,null)
+  assert.ok(used.used_at)
+  const reused=ok(await anonymous.rpc('reset_password_with_code',{
+    p_email:email,p_code:fresh.code,p_new_password:originalPassword,
+  }),'used reset code cannot be reused')
+  assert.equal(reused.ok,false)
+  assert.equal(reused.error,'bad_code')
   assert.ok((await client(anonKey).auth.signInWithPassword({
     email,password:originalPassword,
   })).error,'old password should not authenticate after reset')
@@ -222,10 +316,19 @@ try {
   ok(await client(anonKey).auth.signInWithPassword({email,password:adminAssignedPassword}),
     'admin-assigned synthetic password works')
 
-  console.log(`REAL ISOLATED SUPABASE PASS: ${checks} checks, with synthetic data only.`)
 } finally {
-  // Only identities created in this local test run are eligible for cleanup.
-  if (userId) await service.auth.admin.deleteUser(userId)
-  if (adminId) await service.auth.admin.deleteUser(adminId)
-  if (deletionFixtureId) await service.auth.admin.deleteUser(deletionFixtureId)
+  // Exact per-run IDs/keys only, even when an assertion fails midway.
+  const cleanup = [
+    service.from('leads').delete().eq('phone',samplePhone),
+    service.from('password_reset_requests').delete().eq('email',email),
+    ...contentFixtures.map(({table,key}) => service.from(table).delete()
+      .in('key',[key,`${key}.anonymous`,`${key}.ordinary`])),
+    ...serviceFixtures.map(id => service.from('services').delete().eq('id',id)),
+    ...[userId,adminId,deletionFixtureId].filter(Boolean).map(id => service.auth.admin.deleteUser(id)),
+  ]
+  const results = await Promise.allSettled(cleanup)
+  assert.ok(results.every(result => result.status === 'fulfilled' && !result.value.error),
+    'FAIL: isolated synthetic fixture cleanup did not complete')
+  console.log('PASS cleanup of exact synthetic fixtures and identities')
 }
+console.log(`REAL ISOLATED SUPABASE PASS: ${checks} checks, with synthetic data only.`)

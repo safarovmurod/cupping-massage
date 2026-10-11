@@ -4,8 +4,9 @@ on:
     paths:
       - 'src/**'
       - 'public/**'
-      - 'tests/browser/redesign-smoke.py'
-      - 'tests/browser/accessibility-audit.py'
+      - 'tests/browser/**'
+      - 'testing/isolated/**'
+      - '.github/workflows/supabase-integration.yml'
       - '.github/workflows/browser-smoke.yml'
 permissions:
   contents: read
