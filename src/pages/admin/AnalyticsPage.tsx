@@ -101,7 +101,7 @@ export default function AdminAnalytics() {
       </Select>
     </Stack>
     <Typography sx={{ fontSize: '13px', color: '#c4b8ab' }}>Посещения учитываются после согласия на аналитику. Счётчик регистраций берётся из профилей в базе. Журнал ниже показывает одну страницу событий, общие счётчики учитывают все записи.</Typography>
-    <Card><TableContainer><Table size="small" aria-label="Журнал посещений">
+    <Card><TableContainer tabIndex={0} role="region" aria-label="Прокручиваемый журнал посещений"><Table size="small" aria-label="Журнал посещений">
       <TableHead><TableRow>{['Событие', 'Посетитель / контакт', 'Источник', 'Страница', 'Дата · Душанбе'].map(title => <TableCell key={title}>{title}</TableCell>)}</TableRow></TableHead>
       <TableBody>{events.map(event => {
         const person = profiles.find(profile => profile.id === event.user_id)

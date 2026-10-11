@@ -47,7 +47,7 @@ const inputSx = {
     '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
     '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
-  '& .MuiInputLabel-root': { color: '#8a7f76' },
+  '& .MuiInputLabel-root': { color: '#c8b8c4' },
   '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
@@ -91,10 +91,10 @@ function InfoRow({ label, value, mono = false }) {
       display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '180px 1fr' },
       gap: 0.8, py: 1, borderBottom: '1px solid rgba(255,255,255,0.05)',
     }}>
-      <Typography sx={{ fontSize: '0.82rem', color: '#8a7f76' }}>{label}</Typography>
+      <Typography sx={{ fontSize: '0.82rem', color: '#c8b8c4' }}>{label}</Typography>
       <Typography sx={{
         fontSize: '0.88rem',
-        color: empty ? '#6b6058' : '#f5ede4',
+        color: empty ? '#c8b8c4' : '#f5ede4',
         fontStyle: empty ? 'italic' : 'normal',
         fontFamily: mono ? 'monospace' : 'inherit',
         wordBreak: 'break-word',
@@ -251,7 +251,7 @@ export default function AdminUsers() {
   }), [users])
 
   if (loading) {
-    return <Typography sx={{ textAlign: 'center', py: 6, color: '#8a7f76' }}>Загрузка пользователей…</Typography>
+    return <Typography sx={{ textAlign: 'center', py: 6, color: '#c8b8c4' }}>Загрузка пользователей…</Typography>
   }
 
   const p = details?.profile || {}
@@ -270,7 +270,7 @@ export default function AdminUsers() {
           <Card key={s.label}>
             <CardContent sx={{ py: '14px !important' }}>
               <Typography sx={{ fontSize: '1.6rem', fontWeight: 700, color: s.color }}>{s.value}</Typography>
-              <Typography sx={{ fontSize: '0.78rem', color: '#8a7f76' }}>{s.label}</Typography>
+              <Typography sx={{ fontSize: '0.78rem', color: '#c8b8c4' }}>{s.label}</Typography>
             </CardContent>
           </Card>
         ))}
@@ -280,13 +280,14 @@ export default function AdminUsers() {
       <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
         <TextField
           placeholder="Поиск: имя, email, телефон, город…"
+          inputProps={{ 'aria-label': 'Поиск пользователей' }}
           value={search} onChange={(e) => setSearch(e.target.value)}
           size="small" sx={{ ...inputSx, minWidth: 300, flex: 1, maxWidth: 420 }}
           InputProps={{ startAdornment: (
-            <InputAdornment position="start"><SearchIcon sx={{ color: '#8a7f76', fontSize: 20 }} /></InputAdornment>
+            <InputAdornment position="start"><SearchIcon sx={{ color: '#c8b8c4', fontSize: 20 }} /></InputAdornment>
           )}}
         />
-        <TextField select size="small" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}
+        <TextField select size="small" value={roleFilter} inputProps={{ 'aria-label': 'Фильтр по роли' }} onChange={(e) => setRoleFilter(e.target.value)}
           sx={{ ...inputSx, minWidth: 160 }}>
           <MenuItem value="all">Все роли</MenuItem>
           <MenuItem value="user">Клиенты</MenuItem>
@@ -308,7 +309,7 @@ export default function AdminUsers() {
       </Box>
 
       {filtered.length === 0 ? (
-        <Typography sx={{ textAlign: 'center', py: 6, color: '#8a7f76' }}>Пользователи не найдены</Typography>
+        <Typography sx={{ textAlign: 'center', py: 6, color: '#c8b8c4' }}>Пользователи не найдены</Typography>
       ) : (
         <Card>
           <CardContent sx={{ p: 0 }}>
@@ -317,7 +318,7 @@ export default function AdminUsers() {
                 <TableHead>
                   <TableRow>
                     {['Клиент', 'Телефон', 'Город', 'Роль', 'Статус', 'Регистрация', ''].map((h) => (
-                      <TableCell key={h} sx={{ color: '#8a7f76', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</TableCell>
+                      <TableCell key={h} sx={{ color: '#c8b8c4', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
@@ -337,7 +338,7 @@ export default function AdminUsers() {
                             <Typography sx={{ fontSize: '0.88rem', color: '#f5ede4', fontWeight: 500 }}>
                               {u.full_name || '— без имени —'}
                             </Typography>
-                            <Typography sx={{ fontSize: '0.75rem', color: '#8a7f76' }}>{u.email}</Typography>
+                            <Typography sx={{ fontSize: '0.75rem', color: '#c8b8c4' }}>{u.email}</Typography>
                           </Box>
                         </Box>
                       </TableCell>
@@ -359,7 +360,7 @@ export default function AdminUsers() {
                             color: u.is_active === false ? '#ef5350' : '#25D366',
                           }} />
                       </TableCell>
-                      <TableCell sx={{ color: '#8a7f76', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                      <TableCell sx={{ color: '#c8b8c4', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
                         {fmtDate(u.created_at)}
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -371,7 +372,7 @@ export default function AdminUsers() {
                         </Tooltip>
                         <Tooltip title={u.role === 'admin' ? 'Администратора удалять опасно' : 'Удалить пользователя'}>
                           <IconButton size="small"
-                            sx={{ color: '#8a7f76', '&:hover': { color: '#ef5350', background: 'rgba(239,83,80,0.08)' } }}
+                            sx={{ color: '#c8b8c4', '&:hover': { color: '#ef5350', background: 'rgba(239,83,80,0.08)' } }}
                             onClick={(e) => { e.stopPropagation(); setDelTarget(u) }}>
                             <DeleteIcon sx={{ fontSize: 19 }} />
                           </IconButton>
@@ -400,7 +401,7 @@ export default function AdminUsers() {
                 <Typography sx={{ fontSize: '1.15rem', fontWeight: 700, color: '#f5ede4' }}>
                   {selected.full_name || '— без имени —'}
                 </Typography>
-                <Typography sx={{ fontSize: '0.85rem', color: '#8a7f76' }}>{selected.email}</Typography>
+                <Typography sx={{ fontSize: '0.85rem', color: '#c8b8c4' }}>{selected.email}</Typography>
               </Box>
               <Chip label={selected.is_active === false ? 'Заблокирован' : 'Активен'}
                 sx={{
@@ -411,7 +412,7 @@ export default function AdminUsers() {
 
             <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{
               px: 3, borderBottom: '1px solid rgba(255,255,255,0.08)',
-              '& .MuiTab-root': { color: '#8a7f76', textTransform: 'none', fontWeight: 600, minHeight: 44 },
+              '& .MuiTab-root': { color: '#c8b8c4', textTransform: 'none', fontWeight: 600, minHeight: 44 },
               '& .Mui-selected': { color: '#e2aec0 !important' },
               '& .MuiTabs-indicator': { background: '#e2aec0' },
             }}>
@@ -422,7 +423,7 @@ export default function AdminUsers() {
 
             <DialogContent sx={{ minHeight: 340 }}>
               {detailsLoading ? (
-                <Typography sx={{ textAlign: 'center', py: 5, color: '#8a7f76' }}>Загрузка…</Typography>
+                <Typography sx={{ textAlign: 'center', py: 5, color: '#c8b8c4' }}>Загрузка…</Typography>
               ) : (
                 <>
                   {/* ЛИЧНЫЕ ДАННЫЕ */}
@@ -502,7 +503,7 @@ export default function AdminUsers() {
                   {tab === 2 && (
                     <Box>
                       {!details?.activity?.length ? (
-                        <Typography sx={{ textAlign: 'center', py: 5, color: '#8a7f76' }}>
+                        <Typography sx={{ textAlign: 'center', py: 5, color: '#c8b8c4' }}>
                           Действий пока нет
                         </Typography>
                       ) : (
@@ -518,10 +519,10 @@ export default function AdminUsers() {
                                   {ACTION_LABELS[ev.action] || ev.action}
                                 </Typography>
                                 {ev.page_url && (
-                                  <Typography sx={{ fontSize: '0.75rem', color: '#8a7f76' }}>{ev.page_url}</Typography>
+                                  <Typography sx={{ fontSize: '0.75rem', color: '#c8b8c4' }}>{ev.page_url}</Typography>
                                 )}
                               </Box>
-                              <Typography sx={{ fontSize: '0.78rem', color: '#8a7f76', whiteSpace: 'nowrap' }}>
+                              <Typography sx={{ fontSize: '0.78rem', color: '#c8b8c4', whiteSpace: 'nowrap' }}>
                                 {fmtDate(ev.created_at)}
                               </Typography>
                             </Box>
@@ -535,7 +536,7 @@ export default function AdminUsers() {
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 2.5 }}>
-              <MuiButton onClick={() => setSelected(null)} sx={{ color: '#8a7f76', textTransform: 'none' }}>
+              <MuiButton onClick={() => setSelected(null)} sx={{ color: '#c8b8c4', textTransform: 'none' }}>
                 Закрыть
               </MuiButton>
             </DialogActions>
@@ -548,13 +549,13 @@ export default function AdminUsers() {
         PaperProps={{ sx: { background: 'var(--admin-panel)', border: '1px solid rgba(226,174,192,0.25)', borderRadius: '16px' } }}>
         <DialogTitle sx={{ color: '#f5ede4' }}>Новый пароль для клиента</DialogTitle>
         <DialogContent>
-          <Typography sx={{ fontSize: '0.85rem', color: '#8a7f76', mb: 2 }}>
+          <Typography sx={{ fontSize: '0.85rem', color: '#c8b8c4', mb: 2 }}>
             Клиент: <b style={{ color: '#c4b8ab' }}>{selected?.email}</b>
           </Typography>
           <TextField autoFocus fullWidth label="Новый пароль" value={newPwd}
             onChange={(e) => setNewPwd(e.target.value)} sx={inputSx}
             helperText="Минимум 8 символов. Запишите и передайте клиенту — потом посмотреть будет нельзя."
-            FormHelperTextProps={{ sx: { color: '#8a7f76' } }}
+            FormHelperTextProps={{ sx: { color: '#c8b8c4' } }}
             InputProps={{ endAdornment: (
               <InputAdornment position="end">
                 <Tooltip title="Сгенерировать">
@@ -568,7 +569,7 @@ export default function AdminUsers() {
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <MuiButton onClick={() => setPwdDialog(false)} sx={{ color: '#8a7f76', textTransform: 'none' }}>
+          <MuiButton onClick={() => setPwdDialog(false)} sx={{ color: '#c8b8c4', textTransform: 'none' }}>
             Отмена
           </MuiButton>
           <MuiButton variant="contained" onClick={resetPassword} disabled={pwdSaving || !isStrongPassword(newPwd)}
@@ -586,7 +587,7 @@ export default function AdminUsers() {
           <Typography sx={{ fontSize: '0.88rem', color: '#c4b8ab', mb: 1 }}>
             {delTarget?.full_name || '— без имени —'}
           </Typography>
-          <Typography sx={{ fontSize: '0.82rem', color: '#8a7f76', mb: 2 }}>
+          <Typography sx={{ fontSize: '0.82rem', color: '#c8b8c4', mb: 2 }}>
             {delTarget?.email}
           </Typography>
           <Alert severity="error" sx={{ fontSize: '0.8rem' }}>
@@ -600,7 +601,7 @@ export default function AdminUsers() {
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <MuiButton onClick={() => setDelTarget(null)} sx={{ color: '#8a7f76', textTransform: 'none' }}>
+          <MuiButton onClick={() => setDelTarget(null)} sx={{ color: '#c8b8c4', textTransform: 'none' }}>
             Отмена
           </MuiButton>
           <MuiButton variant="contained" onClick={deleteUser} disabled={delBusy}
@@ -625,7 +626,7 @@ export default function AdminUsers() {
           </Alert>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
-          <MuiButton onClick={() => setCleanDialog(false)} sx={{ color: '#8a7f76', textTransform: 'none' }}>
+          <MuiButton onClick={() => setCleanDialog(false)} sx={{ color: '#c8b8c4', textTransform: 'none' }}>
             Отмена
           </MuiButton>
           <MuiButton variant="contained" onClick={cleanTestUsers} disabled={cleanBusy}

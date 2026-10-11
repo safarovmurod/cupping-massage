@@ -24,10 +24,10 @@ export default function AnalyticsOverview({ summary }) {
     </Stack>
     <Grid container spacing={2}>
       {cards.map(card => <Grid item xs={6} lg={3} key={card.label}>
-        <Card sx={{ height: '100%', background: '#242522', border: '1px solid #ffffff12', borderRadius: '16px' }}>
+        <Card sx={{ height: '100%', background: 'var(--admin-surface)', border: '1px solid #ffffff12', borderRadius: '16px' }}>
           <CardContent sx={{ padding: '20px', '&:last-child': { pb: '20px' } }}>
             <Typography sx={{ minHeight: '38px', color: '#dedbd2', fontSize: '13px', lineHeight: 1.45 }}>{card.label}</Typography>
-            <Typography sx={{ my: '8px', color: '#e4cca1', fontSize: { xs: '30px', lg: '36px' }, lineHeight: 1.1, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{card.value.toLocaleString('ru-RU')}</Typography>
+            <Typography sx={{ my: '8px', color: '#e2aec0', fontSize: { xs: '30px', lg: '36px' }, lineHeight: 1.1, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{card.value.toLocaleString('ru-RU')}</Typography>
             <Typography sx={{ color: '#b7b4aa', fontSize: '11px', lineHeight: 1.5 }}>{card.detail}</Typography>
           </CardContent>
         </Card>

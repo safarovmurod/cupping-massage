@@ -188,3 +188,14 @@ html[data-theme="dark"] .mm-site, html[data-theme="light"] .mm-site {
 .mm-contact-profile { display: inline-block; font-size: 14px; margin-top: 18px; color: var(--brand-accent-dark); }
 .mm-back-link a { color: var(--brand-accent-dark); font-size: 13px; }
 @media(max-width: 768px) { .mm-contact-form-grid { grid-template-columns: 1fr; } .mm-contact-info { padding-top: 0; } }
+
+/* Contrast remediation: WCAG AA automated audit of public pages.
+   Keep the existing brand palette and layout; darken only insufficient text. */
+.mm-site .mm-eyebrow, .mm-site .mm-kicker { color: #71364e; }
+.mm-site .mm-small-copy { color: #55424d; }
+.mm-footer small { color: #55424d; }
+.mm-footer a, .mm-site .mm-contact-profile, .mm-site .mm-back-link a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}

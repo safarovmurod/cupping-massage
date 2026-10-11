@@ -25,7 +25,7 @@ const inputSx = {
     '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
     '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
-  '& .MuiInputLabel-root': { color: '#8a7f76' },
+  '& .MuiInputLabel-root': { color: '#c8b8c4' },
   '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
@@ -75,11 +75,11 @@ export default function AdminSettings() {
         <Card><CardContent>
           <Typography variant="h6" sx={{ mb: 2 }}>Журнал действий</Typography>
           {loading ? <Typography>Загрузка…</Typography> : activity.length === 0 ? (
-            <Typography sx={{ textAlign: 'center', py: 4, color: '#8a7f76' }}>Записей пока нет</Typography>
+            <Typography sx={{ textAlign: 'center', py: 4, color: '#c8b8c4' }}>Записей пока нет</Typography>
           ) : (
             <TableContainer component={Paper} sx={{ background: 'transparent' }}>
               <Table size="small">
-                <TableHead><TableRow><TableCell sx={{ color: '#8a7f76', fontWeight: 600 }}>Действие</TableCell><TableCell sx={{ color: '#8a7f76', fontWeight: 600 }}>Дата</TableCell></TableRow></TableHead>
+                <TableHead><TableRow><TableCell sx={{ color: '#c8b8c4', fontWeight: 600 }}>Действие</TableCell><TableCell sx={{ color: '#c8b8c4', fontWeight: 600 }}>Дата</TableCell></TableRow></TableHead>
                 <TableBody>{activity.map(a => (<TableRow key={a.id} sx={{ '&:hover': { background: 'rgba(255,255,255,0.03)' } }}><TableCell>{a.action}</TableCell><TableCell>{new Date(a.created_at).toLocaleString()}</TableCell></TableRow>))}</TableBody>
               </Table>
             </TableContainer>

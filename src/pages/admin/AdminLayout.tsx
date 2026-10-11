@@ -98,7 +98,7 @@ export default function AdminLayout() {
           Вернуться на сайт
         </Button>
       </Box>
-      <List sx={{ flex: 1, p: 1.5, gap: 0.5 }}>
+      <List component="div" sx={{ flex: 1, p: 1.5, gap: 0.5 }}>
         {navItems.map(item => (
           <NavLink key={item.to} to={item.to} end={item.end}
             style={({ isActive }) => ({ textDecoration: 'none', display: 'block' })}
@@ -125,7 +125,7 @@ export default function AdminLayout() {
       </List>
       <Divider sx={{ borderColor: 'rgba(220,161,182,0.2)' }} />
       <Box sx={{ p: 2 }}>
-        <Typography sx={{ fontSize: '0.82rem', color: '#8a7f76', mb: 1 }}>{profile?.full_name || user?.email}</Typography>
+        <Typography sx={{ fontSize: '0.82rem', color: '#c8b8c4', mb: 1 }}>{profile?.full_name || user?.email}</Typography>
         <Button fullWidth variant="outlined" size="small" onClick={handleLogout}
           sx={{ borderColor: 'rgba(255,255,255,0.1)', color: '#c4b8ab', '&:hover': { borderColor: 'var(--admin-accent)', color: 'var(--admin-accent)' } }}
           startIcon={<MuiLogoutIcon />}>Выйти</Button>
@@ -147,7 +147,7 @@ export default function AdminLayout() {
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700, color: '#f5ede4', fontSize: { xs: '1rem', sm: '1.25rem' } }}>
             {currentTitle}
           </Typography>
-          <Typography sx={{ fontSize: '0.88rem', color: '#8a7f76', display: { xs: 'none', md: 'block' }, mr: 1.5 }}>
+          <Typography sx={{ fontSize: '0.88rem', color: '#c8b8c4', display: { xs: 'none', md: 'block' }, mr: 1.5 }}>
             {user?.email}
           </Typography>
 

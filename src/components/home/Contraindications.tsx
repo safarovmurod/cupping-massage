@@ -1,3 +1,4 @@
+import WarningAmberRounded from '@mui/icons-material/WarningAmberRounded'
 import { motion } from 'framer-motion'
 import { useLang } from '../../contexts/LanguageContext.tsx'
 import ScrollReveal from '../common/ScrollReveal'
@@ -40,7 +41,7 @@ export default function Contraindications() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.05 }}
                   className="px-3.5 py-2.5 rounded-xl bg-glass text-sm text-secondary-soft"
-                >⚠ {t(`contra.${n}`)}</motion.div>
+                ><WarningAmberRounded aria-hidden="true" sx={{ fontSize: 17, verticalAlign: 'middle', mr: 0.5 }} /> {t(`contra.${n}`)}</motion.div>
               ))}
             </div>
             <div className="px-4 py-3.5 rounded-xl text-sm mb-3.5 border-l-[3px] border-orange-400"

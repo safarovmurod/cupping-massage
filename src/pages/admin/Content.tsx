@@ -31,7 +31,7 @@ const inputSx = {
     '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
     '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
-  '& .MuiInputLabel-root': { color: '#8a7f76' },
+  '& .MuiInputLabel-root': { color: '#c8b8c4' },
   '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
@@ -649,7 +649,7 @@ export default function AdminContent() {
   }, [search, activeLang])
 
   if (loading) {
-    return <Typography sx={{ textAlign: 'center', py: 6, color: '#8a7f76' }}>Загрузка контента…</Typography>
+    return <Typography sx={{ textAlign: 'center', py: 6, color: '#c8b8c4' }}>Загрузка контента…</Typography>
   }
 
   const changedInLang = changedKeys.filter((k) => k.endsWith(`.${activeLang}`)).length
@@ -666,14 +666,14 @@ export default function AdminContent() {
       {/* Переключатель языка */}
       <Card sx={{ mb: 2.5 }}>
         <CardContent sx={{ pb: '16px !important' }}>
-          <Typography sx={{ fontSize: '0.85rem', color: '#8a7f76', mb: 1 }}>
+          <Typography sx={{ fontSize: '0.85rem', color: '#c8b8c4', mb: 1 }}>
             Язык, который редактируем:
           </Typography>
           <Tabs
             value={activeLang}
             onChange={(_, v) => setActiveLang(v)}
             sx={{
-              '& .MuiTab-root': { color: '#8a7f76', fontWeight: 600, textTransform: 'none', fontSize: '0.95rem' },
+              '& .MuiTab-root': { color: '#c8b8c4', fontWeight: 600, textTransform: 'none', fontSize: '0.95rem' },
               '& .Mui-selected': { color: '#e2aec0 !important' },
               '& .MuiTabs-indicator': { background: '#e2aec0', height: 3, borderRadius: 2 },
             }}
@@ -739,20 +739,23 @@ export default function AdminContent() {
                         sx={{ height: 20, fontSize: '0.7rem', background: '#cf839e', color: '#fff' }} />
                     )}
                   </Box>
-                  {/* ГДЕ на сайте */}
-                  <Typography sx={{ fontSize: '0.8rem', color: '#8a7f76', display: 'flex', alignItems: 'center', gap: 0.6 }}>
+                  {/* Site location is descriptive; do not nest links within the accordion button. */}
+                  <Typography sx={{ fontSize: '0.8rem', color: '#c8b8c4', display: 'flex', alignItems: 'center', gap: 0.6 }}>
                     <PlaceOutlined aria-hidden="true" sx={{ fontSize: 15 }} /> {section.where}
-                    <a href={section.anchor} target="_blank" rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ color: '#e2aec0', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                      смотреть <OpenInNewIcon sx={{ fontSize: 13 }} />
-                    </a>
                   </Typography>
                 </Box>
               </AccordionSummary>
 
               <AccordionDetails>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.2 }}>
+                  <Box>
+                    <a href={section.anchor} target="_blank" rel="noopener noreferrer"
+                      aria-label={`Смотреть на сайте: ${section.title}`}
+                      style={{ color: '#e2aec0', display: 'inline-flex', alignItems: 'center', gap: 6,
+                        minHeight: 36, padding: '6px 10px', borderRadius: 8, textDecoration: 'underline' }}>
+                      Смотреть на сайте <OpenInNewIcon aria-hidden="true" sx={{ fontSize: 16 }} />
+                    </a>
+                  </Box>
                   {section.fields.map((f) => {
                     const val = getValue(f.key)
                     const def = defaultText(f.key)
@@ -772,7 +775,7 @@ export default function AdminContent() {
                           <Typography sx={{ fontSize: '0.88rem', fontWeight: 600, color: '#c4b8ab' }}>
                             {f.label}
                           </Typography>
-                          <Typography sx={{ fontSize: '0.68rem', color: '#6b6058', fontFamily: 'monospace' }}>
+                          <Typography sx={{ fontSize: '0.68rem', color: '#c8b8c4', fontFamily: 'monospace' }}>
                             {f.key}
                           </Typography>
                         </Box>
@@ -781,6 +784,7 @@ export default function AdminContent() {
                             value={val}
                             onChange={(e) => setValue(f.key, e.target.value)}
                             placeholder={def || '— нет текста по умолчанию —'}
+                            inputProps={{ 'aria-label': f.label }}
                             multiline={!!f.multiline}
                             minRows={f.multiline ? 2 : 1}
                             fullWidth
@@ -790,7 +794,7 @@ export default function AdminContent() {
                           {val && (
                             <Tooltip title="Вернуть текст по умолчанию">
                               <IconButton size="small" onClick={() => resetField(f.key)}
-                                sx={{ color: '#8a7f76', mt: 0.3 }}>
+                                sx={{ color: '#c8b8c4', mt: 0.3 }}>
                                 <RestoreIcon sx={{ fontSize: 18 }} />
                               </IconButton>
                             </Tooltip>
@@ -820,7 +824,7 @@ export default function AdminContent() {
           sx={{
             background: 'linear-gradient(135deg, #8b4660, #74374f)',
             fontWeight: 700, borderRadius: '999px', px: 4, py: 1.2,
-            '&.Mui-disabled': { background: 'rgba(255,255,255,0.08)', color: '#6b6058' },
+            '&.Mui-disabled': { background: 'rgba(255,255,255,0.08)', color: '#c8b8c4' },
           }}
         >
           {saving ? 'Сохранение…' : 'Сохранить изменения'}
@@ -832,12 +836,12 @@ export default function AdminContent() {
             {changedInLang > 0 && ` (на этом языке: ${changedInLang})`}
           </Typography>
         ) : (
-          <Typography sx={{ fontSize: '0.88rem', color: '#8a7f76' }}>Все изменения сохранены</Typography>
+          <Typography sx={{ fontSize: '0.88rem', color: '#c8b8c4' }}>Все изменения сохранены</Typography>
         )}
 
         {changedKeys.length > 0 && (
           <MuiButton size="small" onClick={() => setValues({ ...initial })}
-            sx={{ color: '#8a7f76', textTransform: 'none' }}>
+            sx={{ color: '#c8b8c4', textTransform: 'none' }}>
             Отменить всё
           </MuiButton>
         )}

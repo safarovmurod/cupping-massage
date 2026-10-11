@@ -279,7 +279,7 @@ export const translations = {
     'contact.form.submit': 'Фиристонед', 'contact.form.success': 'Ташаккур! Дархости шумо фиристода шуд.', 'contact.form.success.title': 'Фиристода шуд!',
     'footer.about': 'Массажи бонкагии касбӣ барои саломатӣ ва беҳсозӣ.', 'footer.note': 'Танҳо барои занон ва кӯдакон',
     'footer.links.title': 'Пайвандҳои тез', 'footer.contacts.title': 'Тамосҳо', 'footer.privacy': 'Сиёсати махфият',
-    'footer.copyright': '© 2026 Массажи бонкагӣ. Ҳама ҳуқуқҳо.',
+    'footer.copyright': '© 2026 Мама и малыш. Ҳама ҳуқуқҳо ҳифз шудаанд.',
     'cookie.text': 'Мо cookies истифода мебарем.', 'cookie.accept': 'Қабул', 'cookie.decline': 'Рад',
     '404.title': 'Саҳифа ёфт нашуд', '404.desc': 'Чунин саҳифа вуҷуд надорад.',
     '404.btn.home': 'Ба асосӣ', '404.btn.whatsapp': 'Ба Instagram нависед',

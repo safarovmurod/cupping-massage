@@ -34,7 +34,7 @@ const inputSx = {
     '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
     '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
-  '& .MuiInputLabel-root': { color: '#8a7f76' },
+  '& .MuiInputLabel-root': { color: '#c8b8c4' },
   '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
@@ -118,7 +118,7 @@ export default function PasswordResets() {
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 3 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#f5ede4' }}>Запросы на сброс пароля</Typography>
-          <Typography sx={{ fontSize: '0.85rem', color: '#8a7f76', mt: 0.5 }}>
+          <Typography sx={{ fontSize: '0.85rem', color: '#c8b8c4', mt: 0.5 }}>
             Клиент нажимает «Забыли пароль?» → «По коду от администратора». Заявка появляется здесь.
             Вы выдаёте 6-значный код и отправляете его клиенту в WhatsApp.
           </Typography>
@@ -141,7 +141,7 @@ export default function PasswordResets() {
           <Typography sx={{ fontWeight: 600, color: '#f5ede4', mb: 0.5, fontSize: '0.95rem' }}>
             Выдать код сразу (без заявки)
           </Typography>
-          <Typography sx={{ fontSize: '0.8rem', color: '#8a7f76', mb: 2 }}>
+          <Typography sx={{ fontSize: '0.8rem', color: '#c8b8c4', mb: 2 }}>
             Если клиент позвонил или написал в WhatsApp — введите его email и получите код мгновенно.
           </Typography>
           <Box component="form" onSubmit={createForEmail}
@@ -164,7 +164,7 @@ export default function PasswordResets() {
             </Box>
           ) : rows.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 6, px: 3 }}>
-              <Typography sx={{ color: '#8a7f76' }}>Заявок пока нет.</Typography>
+              <Typography sx={{ color: '#c8b8c4' }}>Заявок пока нет.</Typography>
             </Box>
           ) : (
             <TableContainer component={Paper} sx={{ background: 'transparent', boxShadow: 'none' }}>
@@ -172,7 +172,7 @@ export default function PasswordResets() {
                 <TableHead>
                   <TableRow>
                     {['Email', 'Статус', 'Код', 'Создан', 'Действует до', 'Попытки', 'Действия'].map(h => (
-                      <TableCell key={h} sx={{ color: '#8a7f76', fontWeight: 700, borderColor: 'rgba(255,255,255,0.07)', whiteSpace: 'nowrap' }}>{h}</TableCell>
+                      <TableCell key={h} sx={{ color: '#c8b8c4', fontWeight: 700, borderColor: 'rgba(255,255,255,0.07)', whiteSpace: 'nowrap' }}>{h}</TableCell>
                     ))}
                   </TableRow>
                 </TableHead>
@@ -199,7 +199,7 @@ export default function PasswordResets() {
                                 {row.code}
                               </Typography>
                               <Tooltip title="Скопировать код">
-                                <IconButton size="small" onClick={() => copy(row.code)} sx={{ color: '#8a7f76' }}>
+                                <IconButton size="small" onClick={() => copy(row.code)} sx={{ color: '#c8b8c4' }}>
                                   <CopyIcon sx={{ fontSize: 15 }} />
                                 </IconButton>
                               </Tooltip>
@@ -229,7 +229,7 @@ export default function PasswordResets() {
                               </Tooltip>
                             )}
                             <Tooltip title="Удалить заявку">
-                              <IconButton size="small" onClick={() => removeRow(row)} sx={{ color: '#8a7f76', '&:hover': { color: '#ef5350' } }}>
+                              <IconButton size="small" onClick={() => removeRow(row)} sx={{ color: '#c8b8c4', '&:hover': { color: '#ef5350' } }}>
                                 <DeleteIcon sx={{ fontSize: 17 }} />
                               </IconButton>
                             </Tooltip>
@@ -246,7 +246,7 @@ export default function PasswordResets() {
       </Card>
 
       <Divider sx={{ borderColor: 'rgba(226,174,192,0.15)', my: 3 }} />
-      <Typography sx={{ fontSize: '0.78rem', color: '#6e645d', lineHeight: 1.7 }}>
+      <Typography sx={{ fontSize: '0.78rem', color: '#c8b8c4', lineHeight: 1.7 }}>
         Как это работает: клиент открывает <b>/forgot-password</b> → вкладка «По коду от администратора» → вводит свой email
         → заявка появляется в этой таблице. Вы нажимаете «Выдать код», затем зелёную кнопку WhatsApp — откроется чат
         с готовым текстом. Клиент вводит код и новый пароль на сайте. Код живёт 30 минут, допускается 5 попыток ввода.

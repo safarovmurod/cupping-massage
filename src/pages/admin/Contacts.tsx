@@ -15,7 +15,7 @@ const inputSx = {
     '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
     '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
-  '& .MuiInputLabel-root': { color: '#8a7f76' },
+  '& .MuiInputLabel-root': { color: '#c8b8c4' },
   '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
@@ -67,7 +67,7 @@ export default function AdminContacts() {
     { key: 'wa_msg_en', label: 'Текст сообщения WhatsApp (EN)' },
   ]
 
-  if (loading) return <Typography sx={{ textAlign: 'center', py: 6, color: '#8a7f76' }}>Загрузка настроек…</Typography>
+  if (loading) return <Typography sx={{ textAlign: 'center', py: 6, color: '#c8b8c4' }}>Загрузка настроек…</Typography>
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -78,7 +78,8 @@ export default function AdminContacts() {
             {fields.map(f => (
               <Box key={f.key} sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '200px 1fr' }, gap: 1.5, alignItems: 'center' }}>
                 <Typography sx={{ fontSize: '0.88rem', fontWeight: 500, color: '#c4b8ab' }}>{f.label}</Typography>
-                <TextField value={settings[f.key] || ''} onChange={e => setSettings({ ...settings, [f.key]: e.target.value })} sx={inputSx} />
+                <TextField value={settings[f.key] || ''} inputProps={{ 'aria-label': f.label }}
+                  onChange={e => setSettings({ ...settings, [f.key]: e.target.value })} sx={inputSx} />
               </Box>
             ))}
           </Box>

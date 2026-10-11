@@ -66,14 +66,15 @@ export default function AdminLeads() {
     return matchSearch && matchStatus
   })
 
-  if (loading) return <Typography sx={{ textAlign: 'center', py: 6, color: '#8a7f76' }}>Загрузка заявок…</Typography>
+  if (loading) return <Typography sx={{ textAlign: 'center', py: 6, color: '#c8b8c4' }}>Загрузка заявок…</Typography>
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       {errorMessage && <Alert severity="error" role="alert" sx={{ mb: 2 }}>{errorMessage}</Alert>}
       <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
         <TextField label="Поиск по имени или телефону" value={search} onChange={e => setSearch(e.target.value)} sx={{ ...inputSx, maxWidth: 400 }} />
-        <Select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} size="small" sx={{ ...inputSx, maxWidth: 200, minWidth: 150 }}>
+        <Select value={filterStatus} inputProps={{ 'aria-label': 'Фильтр по статусу заявки' }}
+          onChange={e => setFilterStatus(e.target.value)} size="small" sx={{ ...inputSx, maxWidth: 200, minWidth: 150 }}>
           <MenuItem value="all">Все</MenuItem>
           <MenuItem value="new">Новые</MenuItem>
           <MenuItem value="in_progress">В работе</MenuItem>
@@ -81,18 +82,18 @@ export default function AdminLeads() {
         </Select>
       </Box>
       {filtered.length === 0 ? (
-        <Typography sx={{ textAlign: 'center', py: 6, color: '#8a7f76' }}>Заявок пока нет</Typography>
+        <Typography sx={{ textAlign: 'center', py: 6, color: '#c8b8c4' }}>Заявок пока нет</Typography>
       ) : (
         <Card>
           <CardContent sx={{ p: 0 }}>
             <TableContainer component={Paper} sx={{ background: 'transparent' }}>
               <Table size="small">
                 <TableHead><TableRow>
-                  <TableCell sx={{ color: '#8a7f76', fontWeight: 600 }}>Имя</TableCell>
-                  <TableCell sx={{ color: '#8a7f76', fontWeight: 600 }}>Телефон</TableCell>
-                  <TableCell sx={{ color: '#8a7f76', fontWeight: 600 }}>Комментарий</TableCell>
-                  <TableCell sx={{ color: '#8a7f76', fontWeight: 600 }}>Дата</TableCell>
-                  <TableCell sx={{ color: '#8a7f76', fontWeight: 600 }}>Статус</TableCell>
+                  <TableCell sx={{ color: '#c8b8c4', fontWeight: 600 }}>Имя</TableCell>
+                  <TableCell sx={{ color: '#c8b8c4', fontWeight: 600 }}>Телефон</TableCell>
+                  <TableCell sx={{ color: '#c8b8c4', fontWeight: 600 }}>Комментарий</TableCell>
+                  <TableCell sx={{ color: '#c8b8c4', fontWeight: 600 }}>Дата</TableCell>
+                  <TableCell sx={{ color: '#c8b8c4', fontWeight: 600 }}>Статус</TableCell>
                 </TableRow></TableHead>
                 <TableBody>
                   {filtered.map(l => (
@@ -102,7 +103,8 @@ export default function AdminLeads() {
                       <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.message || '—'}</TableCell>
                       <TableCell>{new Date(l.created_at).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Select value={l.status} onChange={e => updateStatus(l.id, e.target.value)} size="small" sx={{ ...inputSx, minWidth: 130, fontSize: '0.8rem' }}>
+                        <Select value={l.status} inputProps={{ 'aria-label': `Статус заявки ${l.name}` }}
+                          onChange={e => updateStatus(l.id, e.target.value)} size="small" sx={{ ...inputSx, minWidth: 130, fontSize: '0.8rem' }}>
                           <MenuItem value="new">Новые</MenuItem>
                           <MenuItem value="in_progress">В работе</MenuItem>
                           <MenuItem value="completed">Завершённые</MenuItem>
