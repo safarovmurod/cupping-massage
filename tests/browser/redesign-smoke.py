@@ -136,11 +136,11 @@ with sync_playwright() as playwright:
     expect(page.get_by_role("heading", name="Выберите удобную запись")).to_be_visible()
     page.get_by_role("button", name="Для себя").click()
     page.get_by_role("button", name="Далее").click()
-    page.get_by_role("button", name=re.compile("Массаж одной зоны тела")).click()
+    page.get_by_role("button", name=re.compile("Одна зона массажа")).click()
     page.get_by_label("Какая одна зона тела?").select_option("legs")
     page.get_by_role("button", name="Далее").click()
     page.get_by_label("Ваше имя").fill("Саида")
-    expect(page.get_by_text("Массаж одной зоны тела — 70 сомони")).to_be_visible()
+    expect(page.get_by_text("Одна зона массажа — 70 сомони")).to_be_visible()
     expect(page.get_by_role("button", name="Продолжить в WhatsApp")).to_be_visible()
     assert not errors, ("booking-browser-runtime-error", errors)
     checks += 1
