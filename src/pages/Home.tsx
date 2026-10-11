@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import ArrowOutwardRounded from '@mui/icons-material/ArrowOutwardRounded'
 import ArrowDownwardRounded from '@mui/icons-material/ArrowDownwardRounded'
 import CheckRounded from '@mui/icons-material/CheckRounded'
+import WhatsApp from '@mui/icons-material/WhatsApp'
+import Instagram from '@mui/icons-material/Instagram'
 import FavoriteBorderRounded from '@mui/icons-material/FavoriteBorderRounded'
 import ServiceIcon from '../components/brand/ServiceIcon.tsx'
 import { useLang } from '../contexts/LanguageContext.tsx'
@@ -27,7 +29,7 @@ export default function Home() {
             <h1 id="mm-heading">{copy.heroTitle}</h1>
             <p className="mm-hero-subtitle">{copy.heroLead}</p>
             <div className="mm-actions">
-              <DM className="mm-btn mm-btn-primary">{copy.heroPrimary} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM>
+              <Link className="mm-btn mm-btn-primary" to="/booking"><WhatsApp fontSize="small" aria-hidden="true" /> WhatsApp</Link><DM className="mm-btn mm-btn-outline"><Instagram fontSize="small" aria-hidden="true" /> Instagram</DM>
               <a className="mm-btn mm-btn-ghost" href="#services">{copy.heroSecondary} <ArrowDownwardRounded aria-hidden="true" fontSize="small" /></a>
             </div>
             <div className="mm-highlights" aria-label={copy.tagline}>
@@ -52,7 +54,7 @@ export default function Home() {
                 <div className="mm-price">{item.price}</div>
                 <div className="mm-duration">{item.duration}</div>
                 <p>{item.note}</p>
-                <DM className="mm-card-link">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM>
+                <Link to="/booking" className="mm-card-link"><WhatsApp sx={{fontSize:17}} aria-hidden="true" /> {copy.formButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></Link>
               </article>
             ))}
           </div>
@@ -97,7 +99,7 @@ export default function Home() {
           </div>
           <div className="mm-contact-actions">
             <DM className="mm-btn mm-btn-primary">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM>
-            <Link className="mm-btn mm-btn-outline" to="/contact">{copy.formButton}</Link>
+            <Link className="mm-btn mm-btn-outline" to="/booking"><WhatsApp fontSize="small" /> WhatsApp · {copy.formButton}</Link>
             <a className="mm-btn mm-btn-outline" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">{copy.profileButton}</a>
             <p>{copy.hoursLabel}</p>
           </div>

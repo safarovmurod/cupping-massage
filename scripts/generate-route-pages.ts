@@ -6,7 +6,7 @@ const clean = template
   .replace(/\s*<title>[^<]*<\/title>/g, '')
   .replace(/\s*<meta\s+(?:name="(?:description|robots|twitter:[^"]+)"|property="og:(?:title|description|image|url|locale)")[^>]*>/g, '')
   .replace(/\s*<link rel="canonical"[^>]*>/g, '')
-for (const route of ['/', '/contact', '/login', '/register', '/forgot-password', '/reset-password', '/admin']) {
+for (const route of ['/', '/services', '/about', '/faq', '/booking', '/contact', '/login', '/register', '/forgot-password', '/reset-password', '/admin']) {
   const directory = new URL(`../dist${route === '/' ? '' : route}/`, import.meta.url)
   await mkdir(directory, { recursive: true })
   await writeFile(new URL('index.html', directory), clean.replace('</head>', `    ${renderMetadata(route)}\n  </head>`))

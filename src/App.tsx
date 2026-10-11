@@ -14,6 +14,10 @@ import PageMetadata from './components/common/PageMetadata.tsx'
 import LoadErrorBoundary, { LoadErrorNotice } from './components/common/LoadErrorBoundary.tsx'
 import Home from './pages/Home.tsx'
 const Contact = lazy(() => import('./pages/Contact.tsx'))
+const Booking = lazy(() => import('./pages/Booking.tsx'))
+const ServicesPage = lazy(() => import('./pages/PublicSections.tsx').then(m => ({default:m.ServicesPage})))
+const AboutPage = lazy(() => import('./pages/PublicSections.tsx').then(m => ({default:m.AboutPage})))
+const FAQPage = lazy(() => import('./pages/PublicSections.tsx').then(m => ({default:m.FAQPage})))
 const NotFound = lazy(() => import('./pages/NotFound.tsx'))
 const Login = lazy(() => import('./pages/Login.tsx'))
 const Register = lazy(() => import('./pages/Register.tsx'))
@@ -105,6 +109,10 @@ export default function App() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PublicLayout><PageWrapper><Home /></PageWrapper></PublicLayout>} />
+        <Route path="/services" element={<PublicLayout><PageWrapper><ServicesPage /></PageWrapper></PublicLayout>} />
+        <Route path="/about" element={<PublicLayout><PageWrapper><AboutPage /></PageWrapper></PublicLayout>} />
+        <Route path="/faq" element={<PublicLayout><PageWrapper><FAQPage /></PageWrapper></PublicLayout>} />
+        <Route path="/booking" element={<PublicLayout><PageWrapper><Booking /></PageWrapper></PublicLayout>} />
         <Route path="/contact" element={<PublicLayout><PageWrapper><Contact /></PageWrapper></PublicLayout>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />

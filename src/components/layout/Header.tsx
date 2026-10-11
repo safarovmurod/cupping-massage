@@ -4,17 +4,19 @@ import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import MenuRounded from '@mui/icons-material/MenuRounded'
 import CloseRounded from '@mui/icons-material/CloseRounded'
+import WhatsApp from '@mui/icons-material/WhatsApp'
+import Instagram from '@mui/icons-material/Instagram'
 import ArrowOutwardRounded from '@mui/icons-material/ArrowOutwardRounded'
 import BrandMark from '../brand/BrandMark.tsx'
 import LanguageSelect from '../brand/LanguageSelect.tsx'
 import { useLang } from '../../contexts/LanguageContext.tsx'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 import { BRAND_NAME, INSTAGRAM_DM_URL } from '../../lib/brand.ts'
+import { WHATSAPP_NUMBER } from '../../lib/booking.ts'
 import useBrandCopy from '../../hooks/useBrandCopy.ts'
 import '../../pages/mama-malish.css'
 
-// Legacy imports still compile, but public booking uses the explicit Instagram URL.
-export const getWhatsAppLink = (_lang = 'ru', _type = 'general') => INSTAGRAM_DM_URL
+export const getWhatsAppLink = (_lang = 'ru', _type = 'general') => 'https://wa.me/' + WHATSAPP_NUMBER
 
 export default function Header() {
   const { lang, t } = useLang()
@@ -27,8 +29,10 @@ export default function Header() {
   const closeTitle = lang === 'tj' ? 'Менюро пӯшед' : lang === 'en' ? 'Close menu' : 'Закрыть меню'
   const links = [
     { href: '/#home', text: copy.nav[0] },
-    { href: '/#services', text: copy.nav[1] },
-    { href: '/#faq', text: copy.nav[3] },
+    { href: '/services', text: copy.nav[1] },
+    { href: '/services', text: copy.nav[2] },
+    { href: '/about', text: copy.aboutEyebrow },
+    { href: '/faq', text: copy.nav[3] },
     { href: '/contact', text: copy.nav[4] },
   ]
   const admin = user && profile?.role === 'admin' && profile?.is_active === true
@@ -49,7 +53,7 @@ export default function Header() {
               {!user && <><Link to="/login">{t('nav.login')}</Link><Link to="/register">{t('nav.register')}</Link></>}
               {admin && <Link to="/admin">{t('nav.admin')}</Link>}
             </div>
-            <a href={INSTAGRAM_DM_URL} className="mm-header-cta" target="_blank" rel="noopener noreferrer">Instagram <ArrowOutwardRounded aria-hidden="true" sx={{ fontSize: 16 }} /></a>
+            <Link to="/booking" className="mm-header-cta mm-header-whatsapp"><WhatsApp sx={{ fontSize: 19 }} aria-hidden="true" /> WhatsApp</Link><a href={INSTAGRAM_DM_URL} className="mm-header-cta mm-header-instagram" target="_blank" rel="noopener noreferrer"><Instagram sx={{ fontSize: 19 }} aria-hidden="true" /> Instagram</a>
             <IconButton className="mm-mobile-toggle" aria-label={menuTitle} aria-expanded={menuOpen} aria-controls="mm-mobile-menu" onClick={() => setMenuOpen(true)} sx={{ color: '#74374f', minWidth: 44, minHeight: 44 }}><MenuRounded /></IconButton>
           </div>
         </div>
@@ -64,7 +68,7 @@ export default function Header() {
           {!user && <><Link to="/login" onClick={() => setMenuOpen(false)}>{t('nav.login')}</Link><Link to="/register" onClick={() => setMenuOpen(false)}>{t('nav.register')}</Link></>}
           {admin && <Link to="/admin" onClick={() => setMenuOpen(false)}>{t('nav.admin')}</Link>}
         </nav>
-        <a href={INSTAGRAM_DM_URL} target="_blank" rel="noopener noreferrer" className="mm-btn mm-btn-primary mm-mobile-menu-cta">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small"/></a>
+        <Link to="/booking" onClick={() => setMenuOpen(false)} className="mm-btn mm-btn-primary mm-mobile-menu-cta"><WhatsApp fontSize="small" /> WhatsApp</Link><a href={INSTAGRAM_DM_URL} target="_blank" rel="noopener noreferrer" className="mm-btn mm-btn-outline mm-mobile-menu-cta">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small"/></a>
       </Drawer>
     </>
   )

@@ -1,6 +1,22 @@
 {
   "rewrites": [
     {
+      "source": "/services",
+      "destination": "/services/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about/index.html"
+    },
+    {
+      "source": "/faq",
+      "destination": "/faq/index.html"
+    },
+    {
+      "source": "/booking",
+      "destination": "/booking/index.html"
+    },
+    {
       "source": "/contact",
       "destination": "/contact/index.html"
     },

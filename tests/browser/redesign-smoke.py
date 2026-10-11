@@ -16,7 +16,7 @@ assert (BASE_URL.scheme == "http" and BASE_URL.hostname in ("127.0.0.1", "localh
     "Browser smoke requires a loopback HTTP preview origin, never a deployed website."
 WIDTHS = [320, 375, 390, 430, 768, 1024, 1440]
 LANGUAGES = {"ru": "Язык сайта", "tj": "Забони сомона", "en": "Website language"}
-PATHS = ["/", "/contact", "/login", "/register",
+PATHS = ["/", "/services", "/about", "/faq", "/booking", "/contact", "/login", "/register",
          "/forgot-password", "/reset-password", "/not-found-smoke"]
 checks = 0
 mock_calls = []
@@ -63,7 +63,7 @@ with sync_playwright() as playwright:
             errors = []
             page.on("pageerror", lambda err: errors.append(str(err)))
             attach_mocks(page)
-            for path in ["/", "/contact"]:
+            for path in ["/", "/contact", "/booking"]:
                 response = page.goto(BASE + path, wait_until="domcontentloaded", timeout=45000)
                 assert response and response.status == 200, (width, language, path)
                 expect(page.locator("h1").first).to_be_visible(timeout=15000)
@@ -75,6 +75,7 @@ with sync_playwright() as playwright:
                 )
                 assert not errors, ("browser-runtime-error", width, language, path, errors)
                 checks += 1
+            page.goto(BASE + "/contact", wait_until="domcontentloaded")
             expect(page.locator("#contact-name")).to_be_visible()
             context.close()
         print(f"PASS responsive homepage/contact: {width}px × RU/TJ/EN", flush=True)
@@ -129,6 +130,21 @@ with sync_playwright() as playwright:
                    for method, path in mock_calls), mock_calls
     checks += 1
     print("PASS client-side form validation with no database insert", flush=True)
+    # Real booking wizard, including one-zone 70 somoni service and required data.
+    page.evaluate("localStorage.setItem('lang','ru')")
+    page.goto(BASE + "/booking")
+    expect(page.get_by_role("heading", name="Выберите удобную запись")).to_be_visible()
+    page.get_by_role("button", name="Для себя").click()
+    page.get_by_role("button", name="Далее").click()
+    page.get_by_role("button", name=re.compile("Одна зона массажа")).click()
+    page.get_by_label("Какая одна зона тела?").select_option("legs")
+    page.get_by_role("button", name="Далее").click()
+    page.get_by_label("Ваше имя").fill("Саида")
+    expect(page.get_by_text("Одна зона массажа — 70 сомони")).to_be_visible()
+    expect(page.get_by_role("button", name="Продолжить в WhatsApp")).to_be_visible()
+    assert not errors, ("booking-browser-runtime-error", errors)
+    checks += 1
+    print("PASS real three-step WhatsApp booking wizard", flush=True)
     context.close()
 
     browser.close()
