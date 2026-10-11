@@ -4,7 +4,15 @@ Baseline source: metadata and `pg_get_functiondef` from live PostgreSQL
 `alafwzjqxwjanoqrirwi` (read-only, 2026-10-11) plus current branch code.
 **No production RPC was invoked, and no live authentication was performed.**
 The `testing/isolated/test-auth-crud.mjs` suite exercises API behavior against
-**only** local loopback Supabase when Docker is available.
+**only** local loopback Supabase. [Run 38129662154](https://github.com/safarovmurod/cupping-massage/actions/runs/38129662154)
+at `d8410947106a2053083ec3142fb16ef428977c17` passed 100 real API checks on
+PostgreSQL 17.11, together with effective SQL EXECUTE/catalog checks.
+
+The matrix's **live metadata is a dated read-only snapshot**, not a new
+production verification. The isolated reviewed SQL already uses
+`extensions.gen_random_bytes(4)` for reset-code generation, unlike the
+snapshot's `random()` implementations. Local success validates the committed
+test schema, not production parity or an applied production hardening.
 
 PostgREST exposes `public` as an API schema. `EXECUTE` allows reaching a
 public function's endpoint; it is **not** proof that a caller passes the
@@ -52,8 +60,11 @@ and private; direct public RPC is unavailable.
    change production auth rules.
 5. Use fail-closed tests and no state changes in production. Successful synthetic
    mocked browser tests **do not establish** RPC privilege separation.
-6. Genuine local network checks are **BLOCKED until Docker/Supabase CLI can
-   run**, despite the harness being committed and static tests existing.
+6. Genuine local network checks **passed on the isolated Ubuntu runner**.
+   Six administrative RPCs deny anonymous calls through SQL privilege checks
+   and ordinary-user calls through their exact application guards. Missing
+   functions and unrelated server errors now fail the tests. Bulk deletion
+   remains negative-tested only; no administrator-positive bulk call ran.
 7. Google OAuth provider and redirect allowlist are not verified live. The
    React button only invokes `supabase.auth.signInWithOAuth` with
    `redirectTo: window.location.origin + '/'`. A separate OAuth app and

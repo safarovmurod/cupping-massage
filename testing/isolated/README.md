@@ -61,9 +61,10 @@ executed INSERT seed is `seed.sql` containing **fictional content**, not
 accounts or customers. SQL INSERTs *inside CREATE FUNCTION bodies* are
 definitions, not imported rows.
 
-**Schema reproduction status:** manually prepared, not proven by `supabase
-start` here. Do not claim reproducibility PASS until the start/migration
-step succeeds on a fresh Docker volume.
+**Schema reproduction evidence:** [Ubuntu run 38129662154](https://github.com/safarovmurod/cupping-massage/actions/runs/38129662154)
+at `d8410947106a2053083ec3142fb16ef428977c17` successfully started a fresh
+PostgreSQL 17.11 stack, applied all three reviewed migrations and synthetic
+seed, then repeated them with explicit `db reset --local`.
 
 ## 2. Configure React/Vite in this local sandbox
 
@@ -221,12 +222,24 @@ or buy a plan without owner permission.
 
 ## Acceptance / last-known evidence
 
+Verified for `d8410947106a2053083ec3142fb16ef428977c17`, 2026-10-11:
+[real integration](https://github.com/safarovmurod/cupping-massage/actions/runs/38129662154),
+[Verify](https://github.com/safarovmurod/cupping-massage/actions/runs/38129662107),
+[Chromium/axe](https://github.com/safarovmurod/cupping-massage/actions/runs/38129662114).
+All three runs completed successfully. Integration: 100 actual API checks,
+plus SQL catalogs/real TRUNCATE/rollback/invariant checks. Verify: 28 unit
+tests, typecheck, lint, build, audit with zero vulnerabilities. Browser: 52
+mocked smoke checks, 35 axe scans with zero violations, six other UI checks
+and zero uncaught browser errors. Browser mocks do not prove real backend
+integration; the separate integration run does. Later commits require their
+own successful runs. Main, production SQL and deployment were not modified.
+
 | Check | Status now | Pass condition |
 | --- | --- | --- |
-| Production Supabase fallback | FIXED IN BRANCH, CI pending | Missing/mismatched environment rejected at build + runtime |
-| Local CLI/Docker installation | BLOCKED | `docker version`, `supabase --version` |
-| Three reviewed staging migration scripts | PREPARED, NOT TESTED | Fresh `supabase start` succeeds |
-| Nine table TRUNCATE/revoke/rollback | NOT TESTED | Exact-container local SQL assertions all PASS |
-| Real Auth/user/admin RLS, CRUD, RPC | NOT TESTED | Local integration script all PASS |
+| Production Supabase fallback | PASS in branch checks | Missing/mismatched environment rejected at build + runtime |
+| CLI/Docker on Ubuntu runner | PASS | CLI 2.120.0 / runner local Docker socket |
+| Three reviewed staging migration scripts | PASS | Fresh start and explicit local reset succeeded |
+| Nine table TRUNCATE/revoke/rollback | PASS | Actual role attempts + catalogs + preserved invariant digest |
+| Real Auth/user/admin RLS, CRUD, RPC | PASS | 100 real local API checks + exact fixture cleanup |
 | Real Google OAuth | BLOCKED | Separate sandbox credentials + real redirect test |
 | Hosted Preview | BLOCKED | Vercel 403 resolved, approved commercial plan, hosted staging backend |
