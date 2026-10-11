@@ -5,7 +5,7 @@ import { BRAND_NAME, INSTAGRAM_DM_URL, INSTAGRAM_URL, getBrandCopy } from '../..
 import '../../pages/mama-malish.css'
 
 // Retained as a compatibility export for older, non-public admin components.
-export const getWhatsAppLink = () => INSTAGRAM_DM_URL
+export const getWhatsAppLink = (_lang = 'ru', _type = 'general') => INSTAGRAM_DM_URL
 
 export default function Header() {
   const { lang, changeLang } = useLang()
