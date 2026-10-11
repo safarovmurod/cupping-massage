@@ -6,7 +6,6 @@ import { useAuth } from './contexts/AuthContext.tsx'
 import { useLang } from './contexts/LanguageContext.tsx'
 import Header from './components/layout/Header.tsx'
 import Footer from './components/layout/Footer.tsx'
-import WhatsAppFloat from './components/common/WhatsAppFloat.tsx'
 import MobileBottomBar from './components/layout/MobileBottomBar.tsx'
 import CookieConsent from './components/common/CookieConsent.tsx'
 import ScrollToHash from './components/common/ScrollToHash.tsx'
@@ -87,7 +86,6 @@ function PublicLayout({ children }) {
       <Header />
       <main id="main-content" tabIndex={-1}>{children}</main>
       <Footer />
-      <WhatsAppFloat />
       <MobileBottomBar />
       <CookieConsent />
     </>
