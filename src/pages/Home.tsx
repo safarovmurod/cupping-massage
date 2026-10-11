@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import ArrowOutwardRounded from '@mui/icons-material/ArrowOutwardRounded'
 import ArrowDownwardRounded from '@mui/icons-material/ArrowDownwardRounded'
 import CheckRounded from '@mui/icons-material/CheckRounded'
@@ -95,6 +96,7 @@ export default function Home() {
           </div>
           <div className="mm-contact-actions">
             <DM className="mm-btn mm-btn-primary">{copy.instagramButton} <ArrowOutwardRounded aria-hidden="true" fontSize="small" /></DM>
+            <Link className="mm-btn mm-btn-outline" to="/contact">{copy.formButton}</Link>
             <a className="mm-btn mm-btn-outline" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">{copy.profileButton}</a>
             <p>{copy.hoursLabel}</p>
           </div>

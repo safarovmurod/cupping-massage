@@ -170,3 +170,21 @@ html[data-theme="dark"] .mm-site, html[data-theme="light"] .mm-site {
  .mm-language-value { font-size: 12px; }
  .mm-language-select .MuiSelect-select { padding-left: 10px; padding-right: 26px !important; }
 }
+
+/* Contact request flow: same visual tokens as the public landing. */
+.mm-contact-form-grid { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: clamp(24px,5vw,70px); align-items: start; }
+.mm-contact-info { min-width: 0; padding-top: 18px; }
+.mm-contact-info h1 { font-size: clamp(2.2rem,4vw,3.7rem); margin: 10px 0 20px; }
+.mm-contact-info p { line-height: 1.8; }
+.mm-form-card { background: var(--brand-surface); border: 1px solid var(--brand-border); border-radius: var(--brand-radius-card); padding: clamp(22px,4vw,38px); box-shadow: var(--brand-shadow); min-width: 0; }
+.mm-form-card h2 { font-size: clamp(1.6rem,2.4vw,2rem); margin: 0 0 12px; }
+.mm-form-card > p { font-size: 14px; margin-bottom: 25px; }
+.mm-form { display: grid; gap: 20px; }
+.mm-form-submit { border: none; width: 100%; cursor: pointer; font: inherit; font-weight: 700; }
+.mm-form-submit:disabled { opacity: .65; cursor: wait; }
+.mm-child-notice { border-left: 3px solid var(--brand-accent); background: var(--brand-blush); padding: 12px 16px; border-radius: 8px; font-size: 13px; }
+.mm-form-success { display: grid; gap: 10px; justify-items: start; color: var(--brand-accent-dark); padding-block: 12px; }
+.mm-form-success h3 { margin: 0; }
+.mm-contact-profile { display: inline-block; font-size: 14px; margin-top: 18px; color: var(--brand-accent-dark); }
+.mm-back-link a { color: var(--brand-accent-dark); font-size: 13px; }
+@media(max-width: 768px) { .mm-contact-form-grid { grid-template-columns: 1fr; } .mm-contact-info { padding-top: 0; } }
