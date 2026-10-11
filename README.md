@@ -1,4 +1,12 @@
-# Баночный массаж
+# Мама и малыш — массаж для мам и малышей
+
+> Обновление 2026-10-11: публичный бренд — **«Мама и малыш»**, Instagram [@mama_i_malish_tj](https://www.instagram.com/mama_i_malish_tj/).
+> Новый UI и формы разрабатываются в `feature/mama-i-malish-redesign` (draft PR), без изменения production и данных.
+> Разделы ниже описывают также историческую архитектуру `massage_v1`; любые упоминания старого WhatsApp, видео или мобильной навигации относятся к предшествующей версии.
+> Запись через восстановленную форму `/contact` пишет в существующую `leads` с прежней RLS; живые тестовые записи в production запрещены.
+> Цены/условия централизованы в `src/lib/brand.ts`, изменение публичных текстов через существующий админ-редактор `brand.*`.
+> CI выполняет `npm ci`, `npm run lint`, `npm test`, `npm run build`, `npm audit --audit-level=moderate`; браузерные сценарии требуют отдельного реального запуска.
+> Требуемый новый Vercel проект `mama_i_malish` и домен `mama-i-malish.vercel.app` пока не подтверждены. Не переименовывать существующий `massage_v1` автоматически.
 
 React + TypeScript + Vite, MUI, существующие Tailwind-стили и Framer Motion; Supabase Auth и PostgreSQL.
 
