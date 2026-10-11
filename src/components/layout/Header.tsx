@@ -9,7 +9,8 @@ import BrandMark from '../brand/BrandMark.tsx'
 import LanguageSelect from '../brand/LanguageSelect.tsx'
 import { useLang } from '../../contexts/LanguageContext.tsx'
 import { useAuth } from '../../contexts/AuthContext.tsx'
-import { BRAND_NAME, INSTAGRAM_DM_URL, getBrandCopy } from '../../lib/brand.ts'
+import { BRAND_NAME, INSTAGRAM_DM_URL } from '../../lib/brand.ts'
+import useBrandCopy from '../../hooks/useBrandCopy.ts'
 import '../../pages/mama-malish.css'
 
 // Legacy imports still compile, but public booking uses the explicit Instagram URL.
@@ -18,7 +19,7 @@ export const getWhatsAppLink = (_lang = 'ru', _type = 'general') => INSTAGRAM_DM
 export default function Header() {
   const { lang, t } = useLang()
   const { user, profile } = useAuth()
-  const copy = getBrandCopy(lang)
+  const copy = useBrandCopy()
   const location = useLocation()
   const [menuOpen, setMenuOpen] = useState(false)
   useEffect(() => setMenuOpen(false), [location.pathname, location.hash])

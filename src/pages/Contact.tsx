@@ -7,7 +7,8 @@ import Alert from '@mui/material/Alert'
 import CheckCircleOutlineRounded from '@mui/icons-material/CheckCircleOutlineRounded'
 import Instagram from '@mui/icons-material/Instagram'
 import { useLang } from '../contexts/LanguageContext.tsx'
-import { getBrandCopy, INSTAGRAM_DM_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../lib/brand.ts'
+import { INSTAGRAM_DM_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../lib/brand.ts'
+import useBrandCopy from '../hooks/useBrandCopy.ts'
 import { validateLead } from '../lib/formValidation.ts'
 import { trackFormSubmit, trackInstagramClick } from '../lib/analytics.ts'
 import { supabase } from '../lib/supabase.ts'
@@ -25,8 +26,8 @@ const fieldStyle = {
 }
 
 export default function Contact() {
-  const { lang, t } = useLang()
-  const copy = getBrandCopy(lang)
+  const { t } = useLang()
+  const copy = useBrandCopy()
   const [form, setForm] = useState({ name: '', phone: '', time: '', comment: '' })
   const [forWhom, setForWhom] = useState('')
   const [website, setWebsite] = useState('')

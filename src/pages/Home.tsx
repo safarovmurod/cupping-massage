@@ -6,7 +6,8 @@ import CheckRounded from '@mui/icons-material/CheckRounded'
 import FavoriteBorderRounded from '@mui/icons-material/FavoriteBorderRounded'
 import ServiceIcon from '../components/brand/ServiceIcon.tsx'
 import { useLang } from '../contexts/LanguageContext.tsx'
-import { BRAND_NAME, INSTAGRAM_DM_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL, getBrandCopy } from '../lib/brand.ts'
+import { BRAND_NAME, INSTAGRAM_DM_URL, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../lib/brand.ts'
+import useBrandCopy from '../hooks/useBrandCopy.ts'
 import './mama-malish.css'
 
 const DM = ({ children, className = '', ...props }) => (
@@ -15,7 +16,7 @@ const DM = ({ children, className = '', ...props }) => (
 
 export default function Home() {
   const { lang } = useLang()
-  const copy = getBrandCopy(lang)
+  const copy = useBrandCopy()
   const [activeFaq, setActiveFaq] = useState<number | null>(0)
   return (
     <div className="mm-site">

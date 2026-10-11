@@ -19,6 +19,8 @@ import IconButton from '@mui/material/IconButton'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import RestoreIcon from '@mui/icons-material/Restore'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined'
+import { getBrandCopy } from '../../lib/brand.ts'
 import { supabase } from '../../lib/supabase.ts'
 import { translations } from '../../lib/i18n.ts'
 import { useLang } from '../../contexts/LanguageContext.tsx'
@@ -34,16 +36,16 @@ const inputSx = {
 }
 
 const LANGS = [
-  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
-  { code: 'tj', label: 'Тоҷикӣ', flag: '🇹🇯' },
-  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'ru', label: 'Русский', flag: 'RU' },
+  { code: 'tj', label: 'Тоҷикӣ', flag: 'TJ' },
+  { code: 'en', label: 'English', flag: 'EN' },
 ]
 
 /**
  * Каждое поле знает, ГДЕ на сайте оно показывается (where)
  * и на какую секцию ведёт ссылка (anchor).
  */
-const SECTIONS = [
+const LEGACY_SECTIONS = [
   {
     id: 'hero',
     title: 'Главный экран (Hero)',
@@ -168,6 +170,385 @@ const SECTIONS = [
   },
 ]
 
+
+const BRAND_SECTIONS = [
+  {
+    "id": "brand-main",
+    "title": "Мама и малыш · Главная",
+    "where": "Новый первый экран и краткое описание",
+    "anchor": "/",
+    "fields": [
+      {
+        "key": "brand.tagline",
+        "label": "Подпись под логотипом",
+        "multiline": false
+      },
+      {
+        "key": "brand.eyebrow",
+        "label": "Надпись над заголовком",
+        "multiline": false
+      },
+      {
+        "key": "brand.heroTitle",
+        "label": "Главный заголовок",
+        "multiline": true
+      },
+      {
+        "key": "brand.heroLead",
+        "label": "Подзаголовок",
+        "multiline": true
+      },
+      {
+        "key": "brand.heroPrimary",
+        "label": "Кнопка Instagram",
+        "multiline": false
+      },
+      {
+        "key": "brand.heroSecondary",
+        "label": "Кнопка услуги",
+        "multiline": false
+      },
+      {
+        "key": "brand.featureOne",
+        "label": "Преимущество 1",
+        "multiline": false
+      },
+      {
+        "key": "brand.featureTwo",
+        "label": "Преимущество 2",
+        "multiline": false
+      },
+      {
+        "key": "brand.featureThree",
+        "label": "Преимущество 3",
+        "multiline": false
+      }
+    ]
+  },
+  {
+    "id": "brand-prices",
+    "title": "Мама и малыш · Хизматҳо / Услуги и цены",
+    "where": "Семь карточек актуальных услуг",
+    "anchor": "/#services",
+    "fields": [
+      {
+        "key": "brand.introTitle",
+        "label": "Заголовок услуг",
+        "multiline": false
+      },
+      {
+        "key": "brand.introText",
+        "label": "Описание услуг",
+        "multiline": true
+      },
+      {
+        "key": "brand.prices.0.title",
+        "label": "Услуга 1 · Название",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.0.price",
+        "label": "Услуга 1 · Цена",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.0.duration",
+        "label": "Услуга 1 · Длительность",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.0.note",
+        "label": "Услуга 1 · Примечание",
+        "multiline": true
+      },
+      {
+        "key": "brand.prices.1.title",
+        "label": "Услуга 2 · Название",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.1.price",
+        "label": "Услуга 2 · Цена",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.1.duration",
+        "label": "Услуга 2 · Длительность",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.1.note",
+        "label": "Услуга 2 · Примечание",
+        "multiline": true
+      },
+      {
+        "key": "brand.prices.2.title",
+        "label": "Услуга 3 · Название",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.2.price",
+        "label": "Услуга 3 · Цена",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.2.duration",
+        "label": "Услуга 3 · Длительность",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.2.note",
+        "label": "Услуга 3 · Примечание",
+        "multiline": true
+      },
+      {
+        "key": "brand.prices.3.title",
+        "label": "Услуга 4 · Название",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.3.price",
+        "label": "Услуга 4 · Цена",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.3.duration",
+        "label": "Услуга 4 · Длительность",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.3.note",
+        "label": "Услуга 4 · Примечание",
+        "multiline": true
+      },
+      {
+        "key": "brand.prices.4.title",
+        "label": "Услуга 5 · Название",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.4.price",
+        "label": "Услуга 5 · Цена",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.4.duration",
+        "label": "Услуга 5 · Длительность",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.4.note",
+        "label": "Услуга 5 · Примечание",
+        "multiline": true
+      },
+      {
+        "key": "brand.prices.5.title",
+        "label": "Услуга 6 · Название",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.5.price",
+        "label": "Услуга 6 · Цена",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.5.duration",
+        "label": "Услуга 6 · Длительность",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.5.note",
+        "label": "Услуга 6 · Примечание",
+        "multiline": true
+      },
+      {
+        "key": "brand.prices.6.title",
+        "label": "Услуга 7 · Название",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.6.price",
+        "label": "Услуга 7 · Цена",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.6.duration",
+        "label": "Услуга 7 · Длительность",
+        "multiline": false
+      },
+      {
+        "key": "brand.prices.6.note",
+        "label": "Услуга 7 · Примечание",
+        "multiline": true
+      }
+    ]
+  },
+  {
+    "id": "brand-safety",
+    "title": "Мама и малыш · Специалист и безопасность",
+    "where": "Информация о квалификации, разрешении врача и присутствии родителей",
+    "anchor": "/#about",
+    "fields": [
+      {
+        "key": "brand.aboutEyebrow",
+        "label": "Надпись о специалисте",
+        "multiline": false
+      },
+      {
+        "key": "brand.aboutTitle",
+        "label": "Заголовок о специалисте",
+        "multiline": false
+      },
+      {
+        "key": "brand.aboutText",
+        "label": "Обучение и опыт",
+        "multiline": true
+      },
+      {
+        "key": "brand.aboutNote",
+        "label": "Уточнение об опыте",
+        "multiline": true
+      },
+      {
+        "key": "brand.safetyTitle",
+        "label": "Заголовок безопасности",
+        "multiline": false
+      },
+      {
+        "key": "brand.safetyText",
+        "label": "Медицинские условия",
+        "multiline": true
+      },
+      {
+        "key": "brand.safetyDisclaimer",
+        "label": "Информационное предупреждение",
+        "multiline": true
+      }
+    ]
+  },
+  {
+    "id": "brand-faq",
+    "title": "Мама и малыш · Частые вопросы",
+    "where": "Пять вопросов и ответов родителей",
+    "anchor": "/#faq",
+    "fields": [
+      {
+        "key": "brand.faqTitle",
+        "label": "Заголовок FAQ",
+        "multiline": false
+      },
+      {
+        "key": "brand.faqLead",
+        "label": "Подзаголовок FAQ",
+        "multiline": false
+      },
+      {
+        "key": "brand.faqs.0.question",
+        "label": "Вопрос 1"
+      },
+      {
+        "key": "brand.faqs.0.answer",
+        "label": "Ответ 1",
+        "multiline": true
+      },
+      {
+        "key": "brand.faqs.1.question",
+        "label": "Вопрос 2"
+      },
+      {
+        "key": "brand.faqs.1.answer",
+        "label": "Ответ 2",
+        "multiline": true
+      },
+      {
+        "key": "brand.faqs.2.question",
+        "label": "Вопрос 3"
+      },
+      {
+        "key": "brand.faqs.2.answer",
+        "label": "Ответ 3",
+        "multiline": true
+      },
+      {
+        "key": "brand.faqs.3.question",
+        "label": "Вопрос 4"
+      },
+      {
+        "key": "brand.faqs.3.answer",
+        "label": "Ответ 4",
+        "multiline": true
+      },
+      {
+        "key": "brand.faqs.4.question",
+        "label": "Вопрос 5"
+      },
+      {
+        "key": "brand.faqs.4.answer",
+        "label": "Ответ 5",
+        "multiline": true
+      }
+    ]
+  },
+  {
+    "id": "brand-booking",
+    "title": "Мама и малыш · Запись и контакты",
+    "where": "Новый блок контактов, футер и форма записи",
+    "anchor": "/contact",
+    "fields": [
+      {
+        "key": "brand.contactTitle",
+        "label": "Заголовок контактов",
+        "multiline": false
+      },
+      {
+        "key": "brand.contactLead",
+        "label": "Описание связи",
+        "multiline": true
+      },
+      {
+        "key": "brand.instagramButton",
+        "label": "Текст Direct",
+        "multiline": false
+      },
+      {
+        "key": "brand.profileButton",
+        "label": "Текст профиля",
+        "multiline": false
+      },
+      {
+        "key": "brand.formButton",
+        "label": "Кнопка формы",
+        "multiline": false
+      },
+      {
+        "key": "brand.contactsNote",
+        "label": "Примечание о контактах",
+        "multiline": true
+      },
+      {
+        "key": "brand.hoursLabel",
+        "label": "Условия записи",
+        "multiline": false
+      },
+      {
+        "key": "brand.footer",
+        "label": "Подпись футера",
+        "multiline": true
+      },
+      {
+        "key": "brand.copyright",
+        "label": "Дисклеймер футера",
+        "multiline": true
+      }
+    ]
+  }
+]
+
+const SECTIONS = [
+  ...BRAND_SECTIONS,
+  ...LEGACY_SECTIONS.map(s => ({ ...s, title: 'Архив · ' + s.title, where: s.where + ' (старый интерфейс)' })),
+]
+
 export default function AdminContent() {
   const { reloadContent } = useLang()
   const [activeLang, setActiveLang] = useState('ru')
@@ -198,8 +579,14 @@ export default function AdminContent() {
   const dbKey = (key) => `${key}.${activeLang}`
 
   // Текст по умолчанию из i18n — показываем как placeholder
-  const defaultText = (key) =>
-    translations[activeLang]?.[key] || translations.ru?.[key] || ''
+  const defaultText = (key) => {
+    if (key.startsWith('brand.')) {
+      let value: any = getBrandCopy(activeLang)
+      for (const part of key.slice('brand.'.length).split('.')) value = value?.[part]
+      return typeof value === 'string' ? value : ''
+    }
+    return translations[activeLang]?.[key] || translations.ru?.[key] || ''
+  }
 
   const getValue = (key) => values[dbKey(key)] ?? ''
 
@@ -332,7 +719,7 @@ export default function AdminContent() {
           return (
             <Accordion
               key={section.id}
-              defaultExpanded={section.id === 'hero' || !!search}
+              defaultExpanded={section.id === 'brand-main' || !!search}
               sx={{
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(212,168,87,0.15)',
@@ -353,7 +740,7 @@ export default function AdminContent() {
                   </Box>
                   {/* ГДЕ на сайте */}
                   <Typography sx={{ fontSize: '0.8rem', color: '#8a7f76', display: 'flex', alignItems: 'center', gap: 0.6 }}>
-                    📍 {section.where}
+                    <PlaceOutlined aria-hidden="true" sx={{ fontSize: 15 }} /> {section.where}
                     <a href={section.anchor} target="_blank" rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       style={{ color: '#d4a857', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
