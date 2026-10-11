@@ -254,3 +254,9 @@ html[data-theme="dark"] .mm-site, html[data-theme="light"] .mm-site {
  .mm-hero-image,.mm-service-card{transition:none;transform:none!important}
  .mm-services .mm-service-card,.mm-about .mm-about-content,.mm-faq .mm-faq-item{animation:none!important;opacity:1;translate:none}
 }
+
+/* Wide-screen Tajik navigation: prevent crowded labels from expanding the page. */
+@media (min-width:1051px) and (max-width:1500px){
+ .mm-header-nav,.mm-auth-links{display:none}
+ .mm-mobile-toggle{display:inline-flex!important}
+}
