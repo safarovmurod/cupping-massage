@@ -7,14 +7,14 @@ const copy = {
 export function getPageMetadata(pathname: string, language = 'ru') {
   const text = copy[language] || copy.ru
   const path = pathname.replace(/\/+$/, '') || '/'
-  const publicPage = path === '/' || path === '/contact'
+  const publicPage = ['/', '/services', '/about', '/faq', '/booking', '/contact'].includes(path)
   const privateTitle = {
     '/login': text.login, '/register': text.register,
     '/forgot-password': text.recovery, '/reset-password': text.reset,
   }[path] || (path === '/admin' || path.startsWith('/admin/') ? text.admin : text.missing)
   return {
-    title: path === '/' ? text.home : path === '/contact' ? text.contact : `${privateTitle} — ${text.brand}`,
-    description: path === '/contact' ? text.contactDescription : text.description,
+    title: path === '/' ? text.home : ['/contact','/booking'].includes(path) ? text.contact : path === '/services' ? `${language === 'tj' ? 'Хизматҳо ва нархҳо' : language === 'en' ? 'Services and prices' : 'Услуги и цены'} — ${text.brand}` : path === '/about' ? `${language === 'tj' ? 'Дар бораи мо' : language === 'en' ? 'About' : 'О специалисте'} — ${text.brand}` : path === '/faq' ? `${language === 'tj' ? 'Саволҳо' : language === 'en' ? 'Questions' : 'Вопросы'} — ${text.brand}` : `${privateTitle} — ${text.brand}`,
+    description: ['/contact','/booking'].includes(path) ? text.contactDescription : text.description,
     canonical: publicPage ? `${SITE_URL}${path}` : null,
     robots: publicPage ? 'index, follow' : 'noindex, nofollow',
     locale: language === 'tj' ? 'tg_TJ' : language === 'en' ? 'en_US' : 'ru_RU',
