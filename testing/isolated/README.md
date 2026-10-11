@@ -120,13 +120,15 @@ APIs and creates synthetic `example.invalid` accounts:
   lead, and denial of ordinary user's lead access/mutation.
 - Admin CRUD for synthetic `site_content` and `site_settings` keys.
 - Public read of `services` to verify RLS's `is_admin()` dependency.
-- Real anonymous `is_admin()` RPC, normal/admin `is_admin()`, and denial
-  of six admin SECURITY DEFINER RPCs invoked with a normal user's JWT.
+- Real anonymous `is_admin()` RPC, normal/admin `is_admin()`, denial
+  of six admin SECURITY DEFINER RPCs invoked with a normal user's JWT,
+  plus limited administrator-positive operations on strictly disposable accounts.
+  The bulk `admin_delete_test_users()` function is *never* invoked as admin.
 - Real isolated `request_password_reset`, admin test code issuance,
   bad-code rejection, single-use code and successful password replacement.
 
 The script generates passwords in process memory, does not log them, and
-deletes only its two newly created synthetic test identities afterward.
+deletes its newly created synthetic identities afterward (a dedicated third disposable account is also used to validate per-ID deletion).
 It must never run against production (fail-fast URL check).
 
 **Do NOT use** bulk `admin_delete_test_users()` with administrator

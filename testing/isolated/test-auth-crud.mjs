@@ -51,7 +51,7 @@ const originalPassword = 'Aa1!' + randomBytes(21).toString('base64url')
 const newPassword = 'Bb2!' + randomBytes(21).toString('base64url')
 const adminPassword = 'Cc3!' + randomBytes(21).toString('base64url')
 const samplePhone = '992900' + Array.from({length:6},()=>Math.floor(Math.random()*10)).join('')
-let userId, adminId, leadId
+let userId, adminId, leadId, deletionFixtureId
 let checks = 0
 function ok(result, description) {
   if (result.error) throw new Error(`${description}: ${result.error.code || 'API error'}`)
@@ -91,6 +91,14 @@ try {
   assert.equal(ok(await ordinary.rpc('is_admin'), 'ordinary is_admin RPC'), false)
   assert.equal(ok(await administrator.rpc('is_admin'), 'admin is_admin RPC'), true)
   assert.equal(ok(await anonymous.rpc('is_admin'), 'anonymous is_admin RPC'), false)
+  const overview=ok(await administrator.rpc('admin_analytics_summary'),
+    'administrator analytics invoker RPC')
+  assert.ok(overview && typeof overview === 'object')
+  const notAdminSummary=await ordinary.rpc('admin_analytics_summary')
+  assert.ok(notAdminSummary.error || !notAdminSummary.data,
+    'ordinary user cannot inspect admin analytics')
+  checks++
+  console.log('PASS ordinary analytics invoker RPC denied')
   const self=ok(await ordinary.from('profiles').select('id,role,is_active').eq('id',userId),
     'RLS user own profile')
   assert.equal(self.length,1)
@@ -114,6 +122,21 @@ try {
     ['admin_set_user_password',{target_user_id:adminId,new_password:'Aa1!SyntheticOnly123456'}],
   ]
   for (const [name,args] of adminRpc) await forbiddenRpc(name,args)
+  const details=ok(await administrator.rpc('admin_get_user_details',{target_user_id:userId}),
+    'administrator reads only synthetic user details by RPC')
+  assert.ok(details && details.auth && details.profile)
+  const deletionFixture=ok(await service.auth.admin.createUser({
+    email:`sandbox-delete-${uid}@example.invalid`, password:originalPassword, email_confirm:true,
+  }),'create third synthetic deletion-only account')
+  deletionFixtureId=deletionFixture.user?.id
+  assert.ok(deletionFixtureId)
+  const singleDeleted=ok(await administrator.rpc('admin_delete_user',{target_user_id:deletionFixtureId}),
+    'admin_delete_user deletes only the dedicated synthetic target')
+  assert.equal(singleDeleted.ok,true)
+  deletionFixtureId=undefined
+  // The bulk admin_delete_test_users() function deliberately has NO positive
+  // test: matching by email prefix may delete unrelated accounts.
+
   assert.ok(noRows(ok(await ordinary.from('leads').select('id'),
     'RLS denies ordinary lead listing')))
   assert.ok(noRows(ok(await anonymous.from('leads').select('id'),
@@ -175,12 +198,16 @@ try {
     'real admin-issued synthetic reset code')
   assert.equal(issued.ok,true)
   assert.match(issued.code,/^[0-9]{6}$/)
+  const issuedAgain=ok(await administrator.rpc('admin_issue_reset_code',{p_request_id:issued.id}),
+    'admin_issue_reset_code on the synthetic request')
+  assert.equal(issuedAgain.ok,true)
+  assert.match(issuedAgain.code,/^[0-9]{6}$/)
   const denied=ok(await anonymous.rpc('reset_password_with_code',{
     p_email:email,p_code:'bad',p_new_password:newPassword,
   }),'invalid reset code rejected')
   assert.equal(denied.ok,false)
   const changed=ok(await anonymous.rpc('reset_password_with_code',{
-    p_email:email,p_code:issued.code,p_new_password:newPassword,
+    p_email:email,p_code:issuedAgain.code,p_new_password:newPassword,
   }),'real local reset code password flow')
   assert.equal(changed.ok,true)
   assert.ok((await client(anonKey).auth.signInWithPassword({
@@ -188,10 +215,17 @@ try {
   })).error,'old password should not authenticate after reset')
   ok(await client(anonKey).auth.signInWithPassword({email,password:newPassword}),
     'new password authenticates')
+  const adminAssignedPassword='Dd4!' + randomBytes(21).toString('base64url')
+  assert.equal((ok(await administrator.rpc('admin_set_user_password',{
+    target_user_id:userId,new_password:adminAssignedPassword,
+  }), 'admin_set_user_password on disposable synthetic user only')).ok,true)
+  ok(await client(anonKey).auth.signInWithPassword({email,password:adminAssignedPassword}),
+    'admin-assigned synthetic password works')
 
   console.log(`REAL ISOLATED SUPABASE PASS: ${checks} checks, with synthetic data only.`)
 } finally {
   // Only identities created in this local test run are eligible for cleanup.
   if (userId) await service.auth.admin.deleteUser(userId)
   if (adminId) await service.auth.admin.deleteUser(adminId)
+  if (deletionFixtureId) await service.auth.admin.deleteUser(deletionFixtureId)
 }

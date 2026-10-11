@@ -210,7 +210,7 @@ with sync_playwright() as playwright:
                 return route.fulfill(status=503, json={"message":"Synthetic outage", "code":"PGRST503"})
             return route.fulfill(status=201, body="")
         return mock_api(route)
-    page.route("https://*.supabase.co/rest/v1/leads*", flaky_booking)
+    page.route("https://ci-supabase.invalid/rest/v1/leads*", flaky_booking)
     page.goto(BASE + "/contact", wait_until="domcontentloaded")
     page.locator("#contact-name").fill("Synthetic Form Test")
     page.locator("#contact-phone").fill("+992900123456")
@@ -236,7 +236,7 @@ with sync_playwright() as playwright:
                     return route.fulfill(status=503, json={"message":"Synthetic outage", "code":"PGRST503"})
                 return route.fulfill(status=200, json=[])
             return mock_api(route)
-        page.route("https://*.supabase.co/rest/v1/leads*", mock_leads_read)
+        page.route("https://ci-supabase.invalid/rest/v1/leads*", mock_leads_read)
         page.goto(BASE + "/admin/leads", wait_until="domcontentloaded")
         if mode == "empty":
             expect(page.get_by_text("Заявок пока нет")).to_be_visible(timeout=15000)

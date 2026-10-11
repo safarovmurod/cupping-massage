@@ -16,6 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: node --check testing/isolated/test-auth-crud.mjs
       - run: npm test
       - run: npm run build
         env:
