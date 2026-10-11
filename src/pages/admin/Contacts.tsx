@@ -23,18 +23,39 @@ export default function AdminContacts() {
   const [settings, setSettings] = useState({})
   const [loading, setLoading] = useState(true)
   const [saved, setSaved] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => { fetchSettings() }, [])
 
   async function fetchSettings() {
     setLoading(true)
-    try { const { data } = await supabase.from('site_settings').select('*'); const obj = {}; (data || []).forEach(item => { obj[item.key] = item.value }); setSettings(obj) }
-    catch {} finally { setLoading(false) }
+    setErrorMessage('')
+    try {
+      const { data, error } = await supabase.from('site_settings').select('*')
+      if (error) throw error
+      const obj = {}
+      ;(data || []).forEach(item => { obj[item.key] = item.value })
+      setSettings(obj)
+    } catch {
+      setErrorMessage('Не удалось загрузить настройки. Повторите попытку позже.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function saveSettings() {
     setSaved(false)
-    try { for (const [key, value] of Object.entries(settings)) { await supabase.from('site_settings').upsert({ key, value, updated_at: new Date().toISOString() }) }; setSaved(true); setTimeout(() => setSaved(false), 3000) } catch {}
+    setErrorMessage('')
+    try {
+      for (const [key, value] of Object.entries(settings)) {
+        const { error } = await supabase.from('site_settings').upsert({ key, value, updated_at: new Date().toISOString() })
+        if (error) throw error
+      }
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch {
+      setErrorMessage('Не удалось сохранить все настройки. Часть изменений могла сохраниться.')
+    }
   }
 
   const fields = [
@@ -65,6 +86,7 @@ export default function AdminContacts() {
       </Card>
       <MuiButton variant="contained" onClick={saveSettings} sx={{ alignSelf: 'flex-start', background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', px: 4 }}>Сохранить</MuiButton>
       {saved && <Alert severity="success">Сохранено!</Alert>}
+      {errorMessage && <Alert severity="error" role="alert">{errorMessage}</Alert>}
     </motion.div>
   )
 }

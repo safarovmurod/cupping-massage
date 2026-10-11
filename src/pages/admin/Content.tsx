@@ -564,7 +564,8 @@ export default function AdminContent() {
   async function fetchContent() {
     setLoading(true)
     try {
-      const { data } = await supabase.from('site_content').select('key, value')
+      const { data, error } = await supabase.from('site_content').select('key, value')
+      if (error) throw error
       const obj = {}
       ;(data || []).forEach((r) => { obj[r.key] = r.value ?? '' })
       setValues(obj)

@@ -13,6 +13,7 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Select from '@mui/material/Select'
 import { supabase } from '../../lib/supabase.ts'
@@ -30,17 +31,33 @@ export default function AdminLeads() {
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => { fetchLeads() }, [])
 
   async function fetchLeads() {
     setLoading(true)
-    try { const { data } = await supabase.from('leads').select('*').order('created_at', { ascending: false }); setLeads(data || []) }
-    catch {} finally { setLoading(false) }
+    setErrorMessage('')
+    try {
+      const { data, error } = await supabase.from('leads').select('*').order('created_at', { ascending: false })
+      if (error) throw error
+      setLeads(data || [])
+    } catch {
+      setErrorMessage('Не удалось загрузить заявки. Обновите страницу и повторите попытку.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function updateStatus(id, status) {
-    try { await supabase.from('leads').update({ status }).eq('id', id); setLeads(leads.map(l => l.id === id ? { ...l, status } : l)) } catch {}
+    setErrorMessage('')
+    try {
+      const { error } = await supabase.from('leads').update({ status }).eq('id', id)
+      if (error) throw error
+      setLeads(previous => previous.map(l => l.id === id ? { ...l, status } : l))
+    } catch {
+      setErrorMessage('Статус не сохранён. Проверьте соединение и повторите попытку.')
+    }
   }
 
   const filtered = leads.filter(l => {
@@ -53,6 +70,7 @@ export default function AdminLeads() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      {errorMessage && <Alert severity="error" role="alert" sx={{ mb: 2 }}>{errorMessage}</Alert>}
       <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
         <TextField label="Поиск по имени или телефону" value={search} onChange={e => setSearch(e.target.value)} sx={{ ...inputSx, maxWidth: 400 }} />
         <Select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} size="small" sx={{ ...inputSx, maxWidth: 200, minWidth: 150 }}>
