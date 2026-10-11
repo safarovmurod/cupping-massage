@@ -22,7 +22,15 @@ import Chip from '@mui/material/Chip'
 import Tooltip from '@mui/material/Tooltip'
 import { useAuth } from '../../contexts/AuthContext.tsx'
 import { supabase } from '../../lib/supabase.ts'
-import { LogoIcon, DashboardIcon, UsersIcon, LeadsIcon, EditIcon, SettingsIcon, ChartIcon, MapPinIcon } from '../../components/icons/Icons.tsx'
+import BrandMark from '../../components/brand/BrandMark.tsx'
+import DashboardOutlined from '@mui/icons-material/DashboardOutlined'
+import PeopleOutline from '@mui/icons-material/PeopleOutline'
+import AssignmentOutlined from '@mui/icons-material/AssignmentOutlined'
+import EditOutlined from '@mui/icons-material/EditOutlined'
+import SettingsOutlined from '@mui/icons-material/SettingsOutlined'
+import BarChartOutlined from '@mui/icons-material/BarChartOutlined'
+import PlaceOutlined from '@mui/icons-material/PlaceOutlined'
+import '../../styles/admin.css'
 
 const drawerWidth = 250
 
@@ -51,14 +59,14 @@ export default function AdminLayout() {
   }, [])
 
   const navItems = [
-    { to: '/admin', icon: DashboardIcon, label: 'Главная', end: true },
-    { to: '/admin/users', icon: UsersIcon, label: 'Клиенты' },
-    { to: '/admin/leads', icon: LeadsIcon, label: 'Заявки' },
-    { to: '/admin/content', icon: EditIcon, label: 'Тексты сайта' },
-    { to: '/admin/contacts', icon: MapPinIcon, label: 'Контакты' },
-    { to: '/admin/password-resets', icon: () => <MuiKeyIcon sx={{ fontSize: 22 }} />, label: 'Сброс пароля', badge: pendingResets },
-    { to: '/admin/analytics', icon: ChartIcon, label: 'Статистика' },
-    { to: '/admin/settings', icon: SettingsIcon, label: 'Настройки' },
+    { to: '/admin', icon: DashboardOutlined, label: 'Главная', end: true },
+    { to: '/admin/users', icon: PeopleOutline, label: 'Клиенты' },
+    { to: '/admin/leads', icon: AssignmentOutlined, label: 'Заявки' },
+    { to: '/admin/content', icon: EditOutlined, label: 'Тексты сайта' },
+    { to: '/admin/contacts', icon: PlaceOutlined, label: 'Контакты' },
+    { to: '/admin/password-resets', icon: MuiKeyIcon, label: 'Сброс пароля', badge: pendingResets },
+    { to: '/admin/analytics', icon: BarChartOutlined, label: 'Статистика' },
+    { to: '/admin/settings', icon: SettingsOutlined, label: 'Настройки' },
   ]
 
   // Заголовок в шапке = название текущей страницы
@@ -68,10 +76,10 @@ export default function AdminLayout() {
   ) || 'Главная'
 
   const drawerContent = (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#221c2a' }}>
-      <Box sx={{ p: 2.5, display: 'flex', alignItems: 'center', gap: 1.25, borderBottom: '1px solid rgba(212,168,87,0.2)' }}>
-        <LogoIcon size={32} />
-        <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#f5ede4' }}>Админ-панель</Typography>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--admin-panel)' }}>
+      <Box sx={{ p: 2.5, display: 'flex', alignItems: 'center', gap: 1.25, borderBottom: '1px solid rgba(220,161,182,0.2)' }}>
+        <BrandMark size={36} />
+        <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#f5ede4' }}>Мама и малыш · Админ</Typography>
       </Box>
 
       {/* КНОПКА ВОЗВРАТА НА САЙТ */}
@@ -81,10 +89,10 @@ export default function AdminLayout() {
           startIcon={<MuiSiteIcon />}
           onClick={() => setMobileOpen(false)}
           sx={{
-            background: 'linear-gradient(135deg, #d4a857, #e8915a)',
+            background: 'linear-gradient(135deg, var(--admin-action), #74374f)',
             fontWeight: 700, borderRadius: '12px', py: 1.2, textTransform: 'none',
             fontSize: '0.88rem', color: '#fff',
-            '&:hover': { background: 'linear-gradient(135deg, #e8c178, #e8915a)', boxShadow: '0 6px 18px rgba(212,168,87,0.35)' },
+            '&:hover': { background: 'linear-gradient(135deg, #a75e7b, var(--admin-action))', boxShadow: '0 6px 18px rgba(220,161,182,0.35)' },
           }}
         >
           Вернуться на сайт
@@ -99,38 +107,38 @@ export default function AdminLayout() {
             {({ isActive }) => (
               <ListItemButton sx={{
                 borderRadius: '12px', mb: 0.5, px: 2, py: 1.5,
-                background: isActive ? 'linear-gradient(135deg, #d4a857, #e8915a)' : 'transparent',
+                background: isActive ? 'linear-gradient(135deg, var(--admin-action), #74374f)' : 'transparent',
                 color: isActive ? '#fff' : '#c4b8ab',
-                '&:hover': { background: isActive ? 'linear-gradient(135deg, #e8c178, #e8915a)' : 'rgba(255,255,255,0.05)' },
+                '&:hover': { background: isActive ? 'linear-gradient(135deg, #a75e7b, var(--admin-action))' : 'rgba(255,255,255,0.05)' },
               }}>
-                <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}><item.icon width={22} height={22} /></ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}><item.icon sx={{ fontSize: 22 }} /></ListItemIcon>
                 <ListItemText primary={item.label} primaryTypographyProps={{ fontSize: '0.9rem', fontWeight: 500 }} />
                 {item.badge > 0 && (
                   <Chip label={item.badge} size="small"
                     sx={{ height: 20, minWidth: 20, fontSize: '0.7rem', fontWeight: 700,
-                          background: isActive ? 'rgba(255,255,255,0.25)' : '#e8915a', color: '#fff' }} />
+                          background: isActive ? 'rgba(255,255,255,0.25)' : 'var(--admin-action)', color: '#fff' }} />
                 )}
               </ListItemButton>
             )}
           </NavLink>
         ))}
       </List>
-      <Divider sx={{ borderColor: 'rgba(212,168,87,0.2)' }} />
+      <Divider sx={{ borderColor: 'rgba(220,161,182,0.2)' }} />
       <Box sx={{ p: 2 }}>
         <Typography sx={{ fontSize: '0.82rem', color: '#8a7f76', mb: 1 }}>{profile?.full_name || user?.email}</Typography>
         <Button fullWidth variant="outlined" size="small" onClick={handleLogout}
-          sx={{ borderColor: 'rgba(255,255,255,0.1)', color: '#c4b8ab', '&:hover': { borderColor: '#d4a857', color: '#d4a857' } }}
+          sx={{ borderColor: 'rgba(255,255,255,0.1)', color: '#c4b8ab', '&:hover': { borderColor: 'var(--admin-accent)', color: 'var(--admin-accent)' } }}
           startIcon={<MuiLogoutIcon />}>Выйти</Button>
       </Box>
     </Box>
   )
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#1a1520' }}>
+    <Box className="mm-admin-layout" sx={{ display: 'flex', minHeight: '100vh', background: 'var(--admin-bg)' }}>
       <AppBar position="fixed" sx={{
         width: { md: `calc(100% - ${drawerWidth}px)` }, ml: { md: `${drawerWidth}px` },
-        background: 'rgba(26,21,32,0.85)', backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(212,168,87,0.2)', boxShadow: 'none',
+        background: 'rgba(32,23,34,0.95)', backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(220,161,182,0.2)', boxShadow: 'none',
       }}>
         <Toolbar>
           <Button color="inherit" onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen}
@@ -149,11 +157,11 @@ export default function AdminLayout() {
               href="/" component="a" variant="outlined" size="small"
               startIcon={<MuiSiteIcon sx={{ fontSize: 18 }} />}
               sx={{
-                borderColor: 'rgba(212,168,87,0.5)', color: '#d4a857',
+                borderColor: 'rgba(220,161,182,0.5)', color: 'var(--admin-accent)',
                 borderRadius: '999px', textTransform: 'none', fontWeight: 600,
                 whiteSpace: 'nowrap', px: { xs: 1.5, sm: 2 },
                 '& .MuiButton-startIcon': { mr: { xs: 0, sm: 0.8 } },
-                '&:hover': { borderColor: '#d4a857', background: 'rgba(212,168,87,0.1)' },
+                '&:hover': { borderColor: 'var(--admin-accent)', background: 'rgba(220,161,182,0.1)' },
               }}
             >
               <Box component="span">На сайт</Box>
@@ -165,11 +173,11 @@ export default function AdminLayout() {
       <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
         <Drawer variant="temporary" open={mobileOpen} onClose={() => setMobileOpen(false)}
           ModalProps={{ keepMounted: true }}
-          sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: drawerWidth, borderRight: '1px solid rgba(212,168,87,0.2)' } }}>
+          sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: drawerWidth, borderRight: '1px solid rgba(220,161,182,0.2)' } }}>
           {drawerContent}
         </Drawer>
         <Drawer variant="permanent" open
-          sx={{ display: { xs: 'none', md: 'block' }, '& .MuiDrawer-paper': { width: drawerWidth, borderRight: '1px solid rgba(212,168,87,0.2)', boxSizing: 'border-box' } }}>
+          sx={{ display: { xs: 'none', md: 'block' }, '& .MuiDrawer-paper': { width: drawerWidth, borderRight: '1px solid rgba(220,161,182,0.2)', boxSizing: 'border-box' } }}>
           {drawerContent}
         </Drawer>
       </Box>

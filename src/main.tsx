@@ -15,8 +15,8 @@ import './styles/design-tokens.css'
 const muiDarkTheme = createTheme({
   palette: {
     mode: 'dark',
-    primary: { main: '#d4a857', light: '#e8c178' },
-    secondary: { main: '#e8915a' },
+    primary: { main: '#be7994', light: '#e4b5c3' },
+    secondary: { main: '#b96988' },
     background: {
       default: '#1a1520',
       paper: 'rgba(42,34,53,0.6)',
