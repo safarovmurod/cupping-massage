@@ -22,11 +22,11 @@ import { passwordError } from '../lib/password.ts'
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(212,168,87,0.4)' },
-    '&.Mui-focused fieldset': { borderColor: '#d4a857' },
+    '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
+    '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
   '& .MuiInputLabel-root': { color: '#8a7f76' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#d4a857' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
 export default function Register() {
@@ -93,7 +93,7 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-5" style={{ backgroundImage: 'linear-gradient(180deg, #1a1520 0%, #221c2a 50%, #1a1520 100%)' }}>
+    <div className="min-h-screen flex items-center justify-center p-5" style={{ backgroundImage: 'linear-gradient(180deg, #211924 0%, #302333 50%, #211924 100%)' }}>
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -134,7 +134,7 @@ export default function Register() {
             <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                 <GoogleButton label={t('auth.google')} onError={(err) => setError(translateAuthError(err, t))} />
-                <Divider sx={{ borderColor: 'rgba(212,168,87,0.2)', my: 2.5 }}>
+                <Divider sx={{ borderColor: 'rgba(226,174,192,0.2)', my: 2.5 }}>
                   <Typography sx={{ fontSize: '0.75rem', color: '#8a7f76', px: 1 }}>{t('auth.or')}</Typography>
                 </Divider>
               </motion.div>
@@ -155,7 +155,7 @@ export default function Register() {
                 </motion.div>
 
                 {/* ——— Дополнительная информация ——— */}
-                <Divider sx={{ borderColor: 'rgba(212,168,87,0.2)', my: 0.5 }}>
+                <Divider sx={{ borderColor: 'rgba(226,174,192,0.2)', my: 0.5 }}>
                   <Typography sx={{ fontSize: '0.72rem', color: '#8a7f76', px: 1, whiteSpace: 'normal', textAlign: 'center' }}>
                     {t('auth.extra.title')}
                   </Typography>
@@ -200,10 +200,10 @@ export default function Register() {
                   <MuiButton
                     aria-label={t('auth.register.btn')} type="submit" fullWidth variant="contained" disabled={loading}
                     sx={{
-                      background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', py: 1.5,
+                      background: 'linear-gradient(135deg, #8b4660, #74374f)', fontWeight: 600, borderRadius: '999px', py: 1.5,
                       transition: 'all 0.3s ease',
-                      '&:hover': { background: 'linear-gradient(135deg, #e8c178, #e8915a)', transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(212,168,87,0.35)' },
-                      '&.Mui-disabled': { background: 'linear-gradient(135deg, rgba(212,168,87,0.5), rgba(232,145,90,0.5))', color: 'rgba(255,255,255,0.7)' },
+                      '&:hover': { background: 'linear-gradient(135deg, #a35c78, #74374f)', transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(226,174,192,0.35)' },
+                      '&.Mui-disabled': { background: 'linear-gradient(135deg, rgba(226,174,192,0.5), rgba(185,105,136,0.5))', color: 'rgba(255,255,255,0.7)' },
                     }}
                   >
                     {loading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : t('auth.register.btn')}

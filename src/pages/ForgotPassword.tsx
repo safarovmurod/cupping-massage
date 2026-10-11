@@ -20,18 +20,18 @@ import { passwordError } from '../lib/password.ts'
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(212,168,87,0.4)' },
-    '&.Mui-focused fieldset': { borderColor: '#d4a857' },
+    '&:hover fieldset': { borderColor: 'rgba(226,174,192,0.4)' },
+    '&.Mui-focused fieldset': { borderColor: '#e2aec0' },
   },
   '& .MuiInputLabel-root': { color: '#8a7f76' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#d4a857' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#e2aec0' },
 }
 
 const goldBtnSx = {
-  background: 'linear-gradient(135deg, #d4a857, #e8915a)', fontWeight: 600, borderRadius: '999px', py: 1.5,
+  background: 'linear-gradient(135deg, #8b4660, #74374f)', fontWeight: 600, borderRadius: '999px', py: 1.5,
   transition: 'all 0.3s ease',
-  '&:hover': { background: 'linear-gradient(135deg, #e8c178, #e8915a)', transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(212,168,87,0.35)' },
-  '&.Mui-disabled': { background: 'linear-gradient(135deg, rgba(212,168,87,0.5), rgba(232,145,90,0.5))', color: 'rgba(255,255,255,0.7)' },
+  '&:hover': { background: 'linear-gradient(135deg, #a35c78, #74374f)', transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(226,174,192,0.35)' },
+  '&.Mui-disabled': { background: 'linear-gradient(135deg, rgba(226,174,192,0.5), rgba(185,105,136,0.5))', color: 'rgba(255,255,255,0.7)' },
 }
 
 function SuccessPanel({ text }) {
@@ -154,7 +154,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-5" style={{ backgroundImage: 'linear-gradient(180deg, #1a1520 0%, #221c2a 50%, #1a1520 100%)' }}>
+    <div className="min-h-screen flex items-center justify-center p-5" style={{ backgroundImage: 'linear-gradient(180deg, #211924 0%, #302333 50%, #211924 100%)' }}>
       <motion.div
         initial={{ opacity: 0, y: 30, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -169,9 +169,9 @@ export default function ForgotPassword() {
           value={tab} onChange={(_, v) => setTab(v)} variant="fullWidth"
           sx={{
             mb: 3, minHeight: 40,
-            '& .MuiTabs-indicator': { background: 'linear-gradient(90deg, #d4a857, #e8915a)', height: 3, borderRadius: 3 },
+            '& .MuiTabs-indicator': { background: 'linear-gradient(90deg, #e2aec0, #b96988)', height: 3, borderRadius: 3 },
             '& .MuiTab-root': { color: '#8a7f76', fontSize: '0.8rem', fontWeight: 600, textTransform: 'none', minHeight: 40, px: 1 },
-            '& .Mui-selected': { color: '#d4a857 !important' },
+            '& .Mui-selected': { color: '#e2aec0 !important' },
           }}
         >
           <Tab id="recovery-email-tab" aria-controls="recovery-email-panel" label={t('auth.forgot.tab.email')} />
@@ -204,7 +204,7 @@ export default function ForgotPassword() {
                   <button
                     type="button" onClick={() => { setCodeEmail(email); setTab(1) }}
                     className="w-full mt-3 text-xs text-center underline"
-                    style={{ color: '#d4a857', background: 'none', border: 'none', cursor: 'pointer' }}
+                    style={{ color: '#e2aec0', background: 'none', border: 'none', cursor: 'pointer' }}
                   >{t('auth.forgot.tab.code')}</button>
                 </motion.div>
               )}
@@ -239,7 +239,7 @@ export default function ForgotPassword() {
                       <button
                         type="button" onClick={() => setCodeStage('enter')}
                         className="text-xs text-center underline"
-                        style={{ color: '#d4a857', background: 'none', border: 'none', cursor: 'pointer' }}
+                        style={{ color: '#e2aec0', background: 'none', border: 'none', cursor: 'pointer' }}
                       >{t('auth.forgot.code.have')}</button>
                     </Box>
                   )}
