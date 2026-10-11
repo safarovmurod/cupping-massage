@@ -50,6 +50,19 @@ test('SEO gives public pages unique canonical metadata and excludes account, adm
   assert.equal(escapeHtml('<"&\'>'), '&lt;&quot;&amp;&#39;&gt;')
 })
 
+test('hosting migration uses the selected origin for public SEO and preserves private noindex', () => {
+  const origin = 'https://synthetic-hosting-test.pages.dev'
+  const home = getPageMetadata('/', 'ru', origin + '/')
+  assert.equal(home.canonical, origin + '/')
+  assert.equal(home.image, origin + '/images/infant-massage.jpg')
+  assert.equal(getPageMetadata('/contact/', 'tj', origin).canonical, origin + '/contact')
+  const html = renderMetadata('/contact', origin)
+  assert.match(html, /https:\/\/synthetic-hosting-test\.pages\.dev\/contact/)
+  assert.doesNotMatch(html, /massagev1-one\.vercel\.app/)
+  assert.equal(getPageMetadata('/admin/users', 'ru', origin).canonical, null)
+  assert.match(renderMetadata('/login', origin), /noindex, nofollow/)
+})
+
 test('invalid preferences and unavailable browser storage safely fall back', () => {
   const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage')
   try {

@@ -1,9 +1,13 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolveSupabaseConfig } from './src/lib/supabaseConfig.ts'
+import { assertCloudflareStage } from './src/lib/cloudflareConfig.ts'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
+  if (process.env.CF_PAGES === '1') {
+    assertCloudflareStage(env.VITE_DEPLOY_STAGE, process.env.CF_PAGES_BRANCH)
+  }
   // Prevent a cloud Preview build with inherited Production secrets.
   if ((process.env.VERCEL_ENV === 'preview' || process.env.CONTEXT === 'deploy-preview')
       && env.VITE_DEPLOY_STAGE !== 'preview') {

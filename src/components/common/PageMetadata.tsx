@@ -7,7 +7,7 @@ export default function PageMetadata() {
   const { pathname } = useLocation()
   const { lang } = useLang()
   useEffect(() => {
-    const meta = getPageMetadata(pathname, lang)
+    const meta = getPageMetadata(pathname, lang, import.meta.env.VITE_PRODUCTION_ORIGIN)
     document.title = meta.title
     for (const [attribute, name, value] of [
       ['name', 'description', meta.description], ['name', 'robots', meta.robots],

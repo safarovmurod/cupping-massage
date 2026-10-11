@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { resolveSupabaseConfig } from '../src/lib/supabaseConfig.ts'
+import { assertCloudflareStage } from '../src/lib/cloudflareConfig.ts'
 
 const LIVE_URL = 'https://alafwzjqxwjanoqrirwi.supabase.co'
 const DEMO_KEY = 'sb_publishable_synthetic_nonsecret_123456789'
@@ -63,4 +64,18 @@ test('secret/service_role and malformed values rejected without embedding keys i
   ]) {
     assert.throws(() => resolveSupabaseConfig({ ...mock, url }), /Supabase configuration:/)
   }
+})
+
+test('Cloudflare main and preview cannot inherit each other backend stages', () => {
+  assert.doesNotThrow(() => assertCloudflareStage('production', 'main'))
+  assert.doesNotThrow(() => assertCloudflareStage('preview', 'feature/cloudflare-pages'))
+  for (const stage of [undefined, 'preview', 'local', 'ci-mock']) {
+    assert.throws(() => assertCloudflareStage(stage, 'main'), /Cloudflare Pages/)
+  }
+  for (const stage of [undefined, 'production', 'local', 'ci-mock']) {
+    assert.throws(() => assertCloudflareStage(stage, 'feature/cloudflare-pages'), /Cloudflare Pages/)
+  }
+  assert.throws(() => assertCloudflareStage('production', undefined), /CF_PAGES_BRANCH/)
+  assert.throws(() => assertCloudflareStage('production', ' '), /CF_PAGES_BRANCH/)
+  assert.throws(() => resolveSupabaseConfig({ stage: 'preview', url: LIVE_URL, anonKey: DEMO_KEY }))
 })
