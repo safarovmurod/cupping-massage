@@ -57,12 +57,3 @@ test('nine-table rights rehearsal and explicit Docker project checks are isolate
     for (const file of [up, after, rollback]) assert.ok(file.includes(name), `missing ${name} ACL assertion`)
   }
 })
-
-test('browser mock routes cannot accidentally target production Supabase', () => {
-  for (const file of ['tests/browser/redesign-smoke.py', 'tests/browser/accessibility-audit.py']) {
-    const source = text(file)
-    assert.match(source, /https:\/\/ci-supabase\.invalid/)
-    assert.doesNotMatch(source, /https:\/\/\*\.supabase\.co/)
-    assert.doesNotMatch(source, /sb-alafwzjqxwjanoqrirwi-auth-token/)
-  }
-})

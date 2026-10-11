@@ -1,9 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /login
-Disallow: /register
-Disallow: /forgot-password
-Disallow: /reset-password
 
-Sitemap: https://massagev1-one.vercel.app/sitemap.xml
+Sitemap: https://mama-i-malish-tj.pages.dev/sitemap.xml

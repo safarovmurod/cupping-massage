@@ -16,11 +16,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
-      - run: node --check testing/isolated/test-auth-crud.mjs
       - run: npm test
       - run: npm run build
         env:
-          VITE_DEPLOY_STAGE: ci-mock
-          VITE_SUPABASE_URL: https://ci-supabase.invalid
-          VITE_SUPABASE_ANON_KEY: sb_publishable_ci_mock_1234567890
+          VITE_PRODUCTION_ORIGIN: https://mama-i-malish-tj.pages.dev
       - run: npm audit --audit-level=moderate

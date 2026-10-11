@@ -1,5 +1,11 @@
 # Isolated Supabase integration sandbox — NOT production
 
+> **Historical, manual database/security regression harness.** The current static
+> site does not use this backend or need React/Vite Supabase environment variables.
+> The retained integration workflow runs only through `workflow_dispatch`.
+> Older automatic PR and frontend setup instructions below describe the previous
+> application and are historical; they are not current site setup requirements.
+
 **Runtime evidence:** use the latest `Isolated Supabase integration` run for
 Draft PR #2, not this preparation document, to establish PASS/FAIL. The workflow
 runs on `ubuntu-latest` with the runner's local Docker socket, official
