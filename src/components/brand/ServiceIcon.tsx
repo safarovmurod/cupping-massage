@@ -13,7 +13,7 @@ const icons = {
   electro: BoltOutlined,
   light: WbSunnyOutlined,
 }
-export default function ServiceIcon({ name }: { name: keyof typeof icons }) {
-  const Icon = icons[name] || SpaOutlined
+export default function ServiceIcon({ name }: { name: string }) {
+  const Icon = icons[name as keyof typeof icons] || SpaOutlined
   return <Icon sx={{ fontSize: 26 }} aria-hidden="true" focusable="false" />
 }
