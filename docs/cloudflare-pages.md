@@ -75,6 +75,6 @@ Google OAuth Client ID/Secret, provider и Supabase Site URL не заменят
 Если есть предыдущая успешная production-сборка Pages, открыть **Deployments → All deployments → меню нужной сборки → Rollback to this deployment**, сверить SHA и проверить основной адрес.
 Preview не подходит для rollback. До появления предыдущей успешной production-сборки цели для отката нет.
 Rollback переключает опубликованные файлы и не откатывает Supabase.
-Старый Vercel-проект сохраняется; автоматические сборки Vercel можно остановить только после подтверждения безопасной Cloudflare конфигурации.
+Старый Vercel-проект и опубликованная версия сохраняются. После подтверждения безопасной Cloudflare конфигурации в `vercel.json` задано `git.deploymentEnabled.main=false`, чтобы новые push в main не запускали Vercel Hobby production. Git-интеграция не удаляется; для возобновления сборок нужно отдельное решение с подходящим тарифом.
 
 Документация: [Rollbacks](https://developers.cloudflare.com/pages/configuration/rollbacks/).

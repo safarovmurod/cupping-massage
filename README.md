@@ -6,7 +6,7 @@
 > Запись через восстановленную форму `/contact` пишет в существующую `leads` с прежней RLS; живые тестовые записи в production запрещены.
 > Цены/условия централизованы в `src/lib/brand.ts`, изменение публичных текстов через существующий админ-редактор `brand.*`.
 > CI выполняет `npm ci`, `npm run lint`, `npm test`, `npm run build`, `npm audit --audit-level=moderate`; браузерные сценарии требуют отдельного реального запуска.
-> Для бесплатной автоматической публикации подготовлен Cloudflare Pages `mama-i-malish-tj` из `main`. Preview отключён до появления отдельного staging backend. Настройка описана в [Cloudflare Pages](docs/cloudflare-pages.md); факт успешного hosted deployment проверяется отдельно.
+> Для бесплатной автоматической публикации настроен [Cloudflare Pages `mama-i-malish-tj`](https://mama-i-malish-tj.pages.dev) из `main`. Preview отключён до появления отдельного staging backend. Настройка и проверка конкретной сборки описаны в [Cloudflare Pages](docs/cloudflare-pages.md). Будущие Vercel-сборки `main` отключены в `vercel.json`; старый проект и опубликованная версия сохранены.
 
 React + TypeScript + Vite, MUI, существующие Tailwind-стили и Framer Motion; Supabase Auth и PostgreSQL.
 
