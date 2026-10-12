@@ -21,7 +21,7 @@ export default function BookingForm({ services, selectedService, onServiceChange
   const language: BookingLanguage = lang === 'tj' || lang === 'en' ? lang : 'ru'
   const copy = bookingCopy[language]
   const [values, setValues] = useState<BookingValues>({
-    name: '', phone: '', service: selectedService || '', forWhom: '', childAge: '',
+    name: '', phone: '', service: selectedService || '', forWhom: selectedService === 'cupping' ? 'woman' : '', childAge: '',
     preferredDay: '', time: '', note: '', channel: 'whatsapp',
   })
   const [showErrors, setShowErrors] = useState(false)
@@ -30,6 +30,7 @@ export default function BookingForm({ services, selectedService, onServiceChange
   const [copyFailed, setCopyFailed] = useState(false)
   const [awaitingSend, setAwaitingSend] = useState(false)
   const preview = useRef<HTMLTextAreaElement>(null)
+  const adultsOnly = values.service === 'cupping'
   const validation = validateBooking(values, services, language)
   const valid = Object.keys(validation).length === 0
   const message = valid ? buildBookingMessage(values, services, language) : ''
@@ -38,7 +39,11 @@ export default function BookingForm({ services, selectedService, onServiceChange
 
   useEffect(() => {
     if (selectedService) {
-      setValues(previous => ({ ...previous, service: selectedService }))
+      setValues(previous => ({
+        ...previous, service: selectedService,
+        forWhom: selectedService === 'cupping' ? 'woman' : previous.forWhom,
+        childAge: selectedService === 'cupping' ? '' : previous.childAge,
+      }))
       setCopiedMessage('')
       setCopyFailed(false)
       setAwaitingSend(false)
@@ -46,7 +51,10 @@ export default function BookingForm({ services, selectedService, onServiceChange
   }, [selectedService])
 
   function editField(field: keyof BookingValues, value: string) {
-    setValues(previous => ({ ...previous, [field]: value }))
+    setValues(previous => {
+      if (field === 'service' && value === 'cupping') return { ...previous, service: value, forWhom: 'woman', childAge: '' }
+      return { ...previous, [field]: value }
+    })
     if (field === 'service') onServiceChange?.(value)
     setCopiedMessage('')
     setCopyFailed(false)
@@ -102,7 +110,8 @@ export default function BookingForm({ services, selectedService, onServiceChange
           <TextField id="booking-recipient" name="forWhom" select label={copy.recipient} value={values.forWhom} onChange={event => editField('forWhom', event.target.value)}
             required error={!!errors.forWhom} helperText={errors.forWhom} sx={fieldStyle}
             SelectProps={{ MenuProps: { PaperProps: { sx: { background: '#fffdfb', color: '#30242e' } } } }}>
-            <MenuItem value="woman">{copy.woman}</MenuItem><MenuItem value="child">{copy.child}</MenuItem>
+            <MenuItem value="woman">{adultsOnly ? copy.adult : copy.woman}</MenuItem>
+            {!adultsOnly && <MenuItem value="child">{copy.child}</MenuItem>}
           </TextField>
           {values.forWhom === 'child' && <TextField id="booking-child-age" name="childAge" label={copy.childAge} value={values.childAge}
             onChange={event => editField('childAge', event.target.value)} required error={!!errors.childAge} helperText={errors.childAge || copy.childAgeHint}

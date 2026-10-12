@@ -31,9 +31,9 @@ LANGUAGES = {
 }
 REMOVED_ROUTES = ("/login", "/register", "/admin", "/admin/users", "/forgot-password", "/reset-password")
 BOOKING_UI = {
-    "ru": {"child": "Для ребёнка", "age": "6 месяцев", "select": "Выделить сообщение", "openInstagram": "Открыть Instagram"},
-    "tj": {"child": "Барои кӯдак", "age": "6 моҳ", "select": "Матни паёмро интихоб кунед", "openInstagram": "Instagram-ро кушоед"},
-    "en": {"child": "For a child", "age": "6 months", "select": "Select message", "openInstagram": "Open Instagram"},
+    "ru": {"child": "Для ребёнка", "adult": "Для взрослого", "age": "6 месяцев", "ageLabel": "Возраст ребёнка:", "select": "Выделить сообщение", "openInstagram": "Открыть Instagram"},
+    "tj": {"child": "Барои кӯдак", "adult": "Барои калонсол", "age": "6 моҳ", "ageLabel": "Синни кӯдак:", "select": "Матни паёмро интихоб кунед", "openInstagram": "Instagram-ро кушоед"},
+    "en": {"child": "For a child", "adult": "For an adult", "age": "6 months", "ageLabel": "Child’s age:", "select": "Select message", "openInstagram": "Open Instagram"},
 }
 SERVICE_IDS = ("child", "adult", "cupping", "partial", "electro", "light")
 TEST_NAME = "Synthetic booking test"
@@ -176,6 +176,29 @@ def fill_booking(page, language):
     return message
 
 
+def select_service(page, service_id):
+    page.locator("#booking-service").click()
+    page.get_by_role("option").nth(SERVICE_IDS.index(service_id)).click()
+    expect(page.locator("input[name='service']")).to_have_value(service_id)
+
+
+def check_cupping_adult(page, language):
+    expect(page.locator("input[name='forWhom']")).to_have_value("woman")
+    expect(page.locator("#booking-child-age")).to_have_count(0)
+    page.locator("#booking-recipient").click()
+    expect(page.get_by_role("option")).to_have_count(1)
+    page.screenshot(path=str(SHOTS / f"cupping-adult-only-390-{language}.png"), animations="disabled")
+    page.get_by_role("option", name=BOOKING_UI[language]["adult"], exact=True).click()
+    for field, value in {"name": TEST_NAME, "phone": TEST_PHONE, "day": TEST_DAY, "time": "14:30", "note": TEST_NOTE}.items():
+        expect(page.locator("#booking-" + field)).to_have_value(value)
+    expect(page.locator("#booking-preview")).to_be_visible()
+    message = page.locator("#booking-preview").input_value()
+    assert BOOKING_UI[language]["adult"] in message, message
+    assert BOOKING_UI[language]["child"] not in message and BOOKING_UI[language]["ageLabel"] not in message, message
+    assert BOOKING_UI[language]["age"] not in message, "An earlier child's age must not reach an adult cupping draft."
+    return message
+
+
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(args=["--no-sandbox"])
     for width in WIDTHS:
@@ -234,6 +257,39 @@ with sync_playwright() as playwright:
     checks += 1
     context.close()
     print("PASS language switch by mouse/keyboard and persistence after reload", flush=True)
+
+    for language in LANGUAGES:
+        context, page, evidence = new_page(browser, language=language)
+        load(page)
+        fill_booking(page, language)
+        select_service(page, "cupping")
+        check_cupping_adult(page, language)
+        checks += 1
+
+        # Changing away from cupping must restore the normal recipient choices.
+        select_service(page, "child")
+        page.locator("#booking-recipient").click()
+        expect(page.get_by_role("option")).to_have_count(2)
+        page.get_by_role("option", name=BOOKING_UI[language]["child"], exact=True).click()
+        page.locator("#booking-child-age").fill(BOOKING_UI[language]["age"])
+        page.locator(".mm-service-card").nth(SERVICE_IDS.index("cupping")).locator("a[href='#contact']").click()
+        expect(page.locator("input[name='service']")).to_have_value("cupping")
+        message = check_cupping_adult(page, language)
+        checks += 1
+
+        submit = page.locator("form").filter(has=page.locator("#booking-name")).locator("button[type='submit']")
+        with page.expect_request(re.compile(r"https://wa\.me/992007336264\?text=")) as whatsapp:
+            submit.click()
+        assert check_message_url(whatsapp.value.url, TEST_NAME, TEST_PHONE, TEST_NOTE) == message
+        page.get_by_role("radio", name="Instagram", exact=True).check()
+        with page.expect_request("https://ig.me/m/mama_i_malish_tj") as instagram:
+            submit.click()
+        assert instagram.value.url == "https://ig.me/m/mama_i_malish_tj"
+        assert evidence["clipboard"] == [message], "Instagram must copy the adult cupping draft without child age."
+        assert_health(page, evidence, f"cupping-adult-only-{language}")
+        checks += 2
+        context.close()
+        print(f"PASS {language}: cupping auto-selects adult from Select/card, restores child choice for other services and prepares both messenger drafts", flush=True)
 
     for language in LANGUAGES:
         context, page, evidence = new_page(browser, language=language)

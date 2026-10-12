@@ -35,6 +35,28 @@ test('localized message has blank-line sections, omits empty optional fields and
   assert.match(buildBookingMessage(values, services, 'tj'), /Ном: Fictional Guest/)
 })
 
+test('cupping accepts only an adult; other service recipient choices stay unchanged', () => {
+  const cuppingServices = [...services, { id: 'cupping', title: 'Synthetic cupping massage' }]
+  assert.ok(validateBooking({ ...values, service: 'cupping', forWhom: 'child', childAge: '6 months' }, cuppingServices).forWhom)
+  assert.deepEqual(validateBooking({ ...values, service: 'cupping' }, cuppingServices), {})
+  assert.deepEqual(validateBooking({ ...values, service: 'cupping', childAge: 'unused previous age' }, cuppingServices), {})
+  assert.deepEqual(validateBooking({ ...values, forWhom: 'child', childAge: '6 months' }, cuppingServices), {})
+})
+
+test('cupping drafts use the localized adult label and omit a previous child age', () => {
+  const cuppingServices = [...services, { id: 'cupping', title: 'Synthetic cupping massage' }]
+  for (const [language, recipient, childAgeLabel] of [
+    ['ru', 'Для кого: Для взрослого', 'Возраст ребёнка:'],
+    ['tj', 'Барои кӣ: Барои калонсол', 'Синни кӯдак:'],
+    ['en', 'For: For an adult', 'Child’s age:'],
+  ] as const) {
+    const message = buildBookingMessage({ ...values, service: 'cupping', childAge: 'unused previous age' }, cuppingServices, language)
+    assert.ok(message.includes(recipient), language)
+    assert.ok(!message.includes(childAgeLabel) && !message.includes('unused previous age'), language)
+  }
+  assert.match(buildBookingMessage(values, cuppingServices, 'ru'), /Для кого: Для женщины/)
+})
+
 test('WhatsApp URL encodes the exact message and uses only the verified recipient; Instagram is a real Direct link', () => {
   const message = buildBookingMessage({ ...values, note: 'Line one\nLine two: + & ? # = / тоҷикӣ' }, services, 'tj')
   const url = new URL(getWhatsAppBookingUrl(message))

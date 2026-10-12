@@ -33,6 +33,7 @@ export function validateBooking(values: BookingValues, services: BookingService[
   if (values.phone.length > 30 || !/^\+?[\d\s().-]+$/.test(phone) || digits.length < 9 || digits.length > 15) errors.phone = copy.errors.phone
   if (!services.some(item => item.id === values.service && item.title.trim())) errors.service = copy.errors.service
   if (!['woman', 'child'].includes(values.forWhom)) errors.forWhom = copy.errors.recipient
+  if (values.service === 'cupping' && values.forWhom !== 'woman') errors.forWhom = copy.errors.adultsOnly
   if (values.forWhom === 'child' && (!values.childAge.trim() || values.childAge.length > 40)) errors.childAge = copy.errors.childAge
   if (!isValidDay(values.preferredDay)) errors.preferredDay = copy.errors.day
   if (values.time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(values.time)) errors.time = copy.errors.time
@@ -45,11 +46,14 @@ export function buildBookingMessage(values: BookingValues, services: BookingServ
   const copy = bookingCopy[language]
   const service = services.find(item => item.id === values.service)
   const sections = [copy.intro]
+  let recipient = ''
+  if (values.forWhom === 'child') recipient = copy.child
+  if (values.forWhom === 'woman') recipient = values.service === 'cupping' ? copy.adult : copy.woman
   const fields = [
     [copy.labels.name, values.name],
     [copy.labels.phone, values.phone],
     [copy.labels.service, service?.title || ''],
-    [copy.labels.recipient, values.forWhom === 'child' ? copy.child : values.forWhom === 'woman' ? copy.woman : ''],
+    [copy.labels.recipient, recipient],
     [copy.labels.childAge, values.forWhom === 'child' ? values.childAge : ''],
     [copy.labels.day, values.preferredDay],
     [copy.labels.time, values.time],
