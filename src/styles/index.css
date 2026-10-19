@@ -1,0 +1,10 @@
+@import './fonts.css';
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; font-family: Inter, sans-serif; color: #30242e; background: #fbf6f1; }
+a { text-decoration: none; }
+button, input, textarea, select { font: inherit; }
+input, textarea, select { font-size: 16px; }
+:focus-visible { outline: 3px solid #8b4660; outline-offset: 4px; }
+.skip-link { position: fixed; top: 12px; left: 12px; z-index: 2000; transform: translateY(-200%); padding: 12px 20px; border-radius: 12px; background: #fffdfb; color: #74374f; }
+.skip-link:focus { transform: translateY(0); }

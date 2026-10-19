@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mama-i-malish-tj.pages.dev/sitemap.xml
